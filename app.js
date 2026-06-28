@@ -70,29 +70,27 @@ async function syncFromGitHub() {
 
 async function syncToGitHub(logs) {
   if (!GH_TOKEN) return;
+  const url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + getDataFileName();
   try {
+    // 先 GET 获取 sha（如果文件已存在）
     let sha = null;
-    const getRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
-      headers: { Authorization: 'token ' + GH_TOKEN }
-    });
-    if (getRes.ok) { const data = await getRes.json(); sha = data.sha; }
+    try {
+      const getRes = await fetch(url, { headers: { Authorization: 'token ' + GH_TOKEN } });
+      if (getRes.ok) { const d = await getRes.json(); sha = d.sha; }
+    } catch(e) { /* GET 失败可能因为文件不存在，继续 PUT */ }
 
-    const content = btoa(JSON.stringify(logs));
-    const bodyObj = { message: 'update ' + getDataFileName(), content: content };
+    const bodyObj = { message: 'update', content: btoa(JSON.stringify(logs)) };
     if (sha) bodyObj.sha = sha;
-    const putRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
+    const putRes = await fetch(url, {
       method: 'PUT',
       headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
       body: JSON.stringify(bodyObj)
     });
-    if (putRes.ok) {
-      showToast('已同步到云端');
-    } else {
-      const err = await putRes.json().catch(() => ({}));
-      showToast('同步失败: ' + (err.message || putRes.status), true);
-    }
+    if (putRes.ok) { showToast('已同步'); return; }
+    const err = await putRes.json().catch(() => ({}));
+    showToast('失败: ' + (err.message || putRes.status), true);
   } catch(e) {
-    showToast('错误: ' + (e.message || e), true);
+    showToast('api.github.com 不通', true);
   }
 }
 
