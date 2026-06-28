@@ -47,8 +47,9 @@ function clearCurrentUser() { localStorage.removeItem(CURRENT_USER_KEY); }
 function getStorageKey() { return DATA_PREFIX + getCurrentUser(); }
 
 // ============ GitHub 同步 ============
-const GH_TOKEN = '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';
-const GH_REPO = 'LAlaworld/gongshi';
+const GH_CONFIG = window.GH_CONFIG || {};
+const GH_TOKEN = GH_CONFIG.token || '';
+const GH_REPO = GH_CONFIG.repo || 'LAlaworld/gongshi';
 
 function getDataFileName() {
   const user = getCurrentUser();
