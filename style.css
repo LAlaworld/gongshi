@@ -126,27 +126,32 @@
 
   .top-bar-weather {
     display: flex;
-    gap: 18px;
+    flex-direction: column;
+    gap: 6px;
   }
 
   /* ---- 登录页 ---- */
   .login-overlay {
     position: fixed; inset: 0;
     background: #fef9ee;
-    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: env(safe-area-inset-top, 20px) 20px env(safe-area-inset-bottom, 20px);
   }
   .login-overlay.hidden { display: none; }
   .login-card {
     text-align: center;
-    background: rgba(255,255,255,0.72);
+    background: rgba(255,255,255,0.1);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.7);
     border-radius: 24px;
     padding: 40px 32px;
     box-shadow: 0 2px 40px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
     width: 100%;
     max-width: 340px;
+    margin: 0 auto;
   }
   .login-icon {
     width: 60px; height: 60px;
@@ -209,10 +214,9 @@
 
   .weather-item {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 3px;
-    min-width: 44px;
+    gap: 6px;
     transition: opacity 0.4s;
   }
 
@@ -916,8 +920,8 @@
 
     .top-bar-date-weekday { font-size: 15px; }
     .top-bar-date-full { font-size: 11px; }
-    .top-bar-weather { gap: 12px; }
-    .weather-icon { line-height: 1; }
+    .top-bar-weather { gap: 4px; }
+    .weather-icon img { width: 16px; height: 16px; }
     .weather-temp { font-size: 11px; }
 
     header h1 { font-size: 32px; }
