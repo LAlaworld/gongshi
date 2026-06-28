@@ -92,7 +92,7 @@ async function syncToGitHub(logs) {
       showToast('同步失败: ' + (err.message || putRes.status), true);
     }
   } catch(e) {
-    showToast('网络错误，未同步', true);
+    showToast('错误: ' + (e.message || e), true);
   }
 }
 
