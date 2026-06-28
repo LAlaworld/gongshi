@@ -476,12 +476,12 @@
   }
 
   .log-card {
-    background: rgba(255,255,255,0.5);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    background: rgba(255,255,255,0.3);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border: 1px solid rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.7);
     border-radius: var(--radius-log);
     padding: 16px 18px;
     box-shadow: 0 1px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5);
