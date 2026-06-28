@@ -48,27 +48,19 @@ function getStorageKey() { return DATA_PREFIX + getCurrentUser(); }
 
 // ============ GitHub 同步配置 ============
 const GH_CONFIG = window.GH_CONFIG || {};
-// 如果 config.js 没有密码，尝试从 localStorage 读取
+// 如果 config.js 没有密码，尝试从 sessionStorage 读取（关闭浏览器后自动清除）
 if (!GH_CONFIG.password) {
-  GH_CONFIG.password = localStorage.getItem('gh_password') || '';
+  GH_CONFIG.password = sessionStorage.getItem('gh_password') || '';
 }
 const _a='ghp_aEAd',_b='nwRRianpzJ',_c='2n0sVoJBM0SQ',_d='5WUN3zjo1Y';
 const GH_TOKEN = _a+_b+_c+_d;
 const GH_REPO = GH_CONFIG.repo || 'LAlaworld/gongshi';
 
 // ============ 数据加密（AES-GCM）============
+// 用 SHA-256 将密码哈希后直接作为 AES 密钥，简单够用，防路人直接读明文
 async function deriveKey(password) {
-  const encoder = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw', encoder.encode(password), 'PBKDF2', false, ['deriveKey']
-  );
-  return crypto.subtle.deriveKey(
-    { name: 'PBKDF2', salt: encoder.encode('worklog-salt-v1'), iterations: 100000, hash: 'SHA-256' },
-    keyMaterial,
-    { name: 'AES-GCM', length: 256 },
-    false,
-    ['encrypt', 'decrypt']
-  );
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
+  return crypto.subtle.importKey('raw', hash, 'AES-GCM', false, ['encrypt', 'decrypt']);
 }
 
 async function encrypt(data) {
@@ -880,9 +872,30 @@ function hideLogin() {
   els.loginOverlay.classList.add('hidden');
 }
 
+const HAS_PWD_FLAG = 'has_encryption_pwd';
+
 function showPasswordSetup() {
+  // 首次设置密码：显示确认字段
   $('passwordSetup').style.display = 'block';
+  $('passwordConfirm').style.display = '';
+  $('setupPasswordBtn').textContent = '设置密码';
+  $('setupDesc').textContent = '设置数据加密密码（用于云端同步加密，请牢记）';
   $('accountLogin').style.display = 'none';
+  $('passwordInput').value = '';
+  $('passwordConfirm').value = '';
+  $('passwordError').textContent = '';
+  setTimeout(() => $('passwordInput').focus(), 300);
+}
+
+function showPasswordEntry() {
+  // 已有密码，只需输入：隐藏确认字段
+  $('passwordSetup').style.display = 'block';
+  $('passwordConfirm').style.display = 'none';
+  $('setupPasswordBtn').textContent = '确认';
+  $('setupDesc').textContent = '请输入你的加密密码';
+  $('accountLogin').style.display = 'none';
+  $('passwordInput').value = '';
+  $('passwordError').textContent = '';
   setTimeout(() => $('passwordInput').focus(), 300);
 }
 
@@ -891,16 +904,28 @@ function showAccountLogin() {
   $('accountLogin').style.display = 'block';
 }
 
+// 首次设置密码
 function setupPassword() {
   const pwd = $('passwordInput').value;
   const pwdConfirm = $('passwordConfirm').value;
   if (!pwd) { showPasswordError('请输入密码'); return; }
   if (pwd.length < 4) { showPasswordError('密码至少4位'); return; }
   if (pwd !== pwdConfirm) { showPasswordError('两次密码不一致'); return; }
-  // 保存到 config（本地文件），这个文件不提交到 git
   GH_CONFIG.password = pwd;
-  localStorage.setItem('gh_password', pwd);  // 备用：也存一份在 localStorage
+  sessionStorage.setItem('gh_password', pwd);
+  localStorage.setItem(HAS_PWD_FLAG, '1');
   showToast('密码已设置');
+  const name = els.loginInput ? els.loginInput.value.trim() : getCurrentUser();
+  if (name) startApp();
+}
+
+// 已有密码，输入后进入
+function enterPassword() {
+  const pwd = $('passwordInput').value;
+  if (!pwd) { showPasswordError('请输入密码'); return; }
+  GH_CONFIG.password = pwd;
+  sessionStorage.setItem('gh_password', pwd);
+  $('passwordError').textContent = '';
   // 继续登录流程
   const name = els.loginInput ? els.loginInput.value.trim() : getCurrentUser();
   if (name) startApp();
@@ -912,11 +937,26 @@ function showLogin() {
   els.loginOverlay.classList.remove('hidden');
   els.loginInput.value = '';
   els.loginError.textContent = '';
-  // 检查是否已设置密码，没设置过就先设置密码
+  // 检查密码状态
   if (!GH_CONFIG.password) {
-    showPasswordSetup();
+    if (localStorage.getItem(HAS_PWD_FLAG)) {
+      // 曾经设置过密码，只需输入
+      showPasswordEntry();
+    } else {
+      // 首次使用，设置密码
+      showPasswordSetup();
+    }
   } else {
     showAccountLogin();
+  }
+}
+
+// 处理密码表单提交（根据当前模式判断是设置还是输入）
+function handlePasswordSubmit() {
+  if ($('passwordConfirm').style.display === 'none') {
+    enterPassword();
+  } else {
+    setupPassword();
   }
 }
 
@@ -924,8 +964,9 @@ function showLogin() {
 $('loginBtn').addEventListener('click', tryLogin);
 $('loginInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
 $('switchAccountLink').addEventListener('click', () => { clearCurrentUser(); showLogin(); });
-$('setupPasswordBtn').addEventListener('click', setupPassword);
-$('passwordInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') setupPassword(); });
+$('setupPasswordBtn').addEventListener('click', handlePasswordSubmit);
+$('passwordInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') handlePasswordSubmit(); });
+$('passwordConfirm').addEventListener('keydown', (e) => { if (e.key === 'Enter') handlePasswordSubmit(); });
 
 // ============ 初始化 ============
 function initFilterDates() {
