@@ -46,23 +46,51 @@ function clearCurrentUser() { localStorage.removeItem(CURRENT_USER_KEY); }
 
 function getStorageKey() { return DATA_PREFIX + getCurrentUser(); }
 
-// ============ GitHub 同步 ============
+// ============ GitHub 同步配置 ============
+const GH_CONFIG = window.GH_CONFIG || {};
+// 如果 config.js 没有密码，尝试从 localStorage 读取
+if (!GH_CONFIG.password) {
+  GH_CONFIG.password = localStorage.getItem('gh_password') || '';
+}
 const _a='ghp_aEAd',_b='nwRRianpzJ',_c='2n0sVoJBM0SQ',_d='5WUN3zjo1Y';
 const GH_TOKEN = _a+_b+_c+_d;
-const GH_REPO = 'LAlaworld/gongshi';
+const GH_REPO = GH_CONFIG.repo || 'LAlaworld/gongshi';
 
-function toBase64(str) {
-  const bytes = new TextEncoder().encode(str);
-  let bin = '';
-  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-  return btoa(bin);
+// ============ 数据加密（AES-GCM）============
+async function deriveKey(password) {
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', encoder.encode(password), 'PBKDF2', false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: encoder.encode('worklog-salt-v1'), iterations: 100000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
 }
 
-function fromBase64(b64) {
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return new TextDecoder().decode(bytes);
+async function encrypt(data) {
+  const key = await deriveKey(GH_CONFIG.password);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const encoded = new TextEncoder().encode(JSON.stringify(data));
+  const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
+  // 合并 IV + 密文，方便存储
+  const combined = new Uint8Array(iv.length + cipher.byteLength);
+  combined.set(iv);
+  combined.set(new Uint8Array(cipher), iv.length);
+  return btoa(String.fromCharCode(...combined));
+}
+
+async function decrypt(b64data) {
+  if (!GH_CONFIG.password) throw new Error('未设置密码');
+  const combined = Uint8Array.from(atob(b64data), c => c.charCodeAt(0));
+  const iv = combined.slice(0, 12);
+  const data = combined.slice(12);
+  const key = await deriveKey(GH_CONFIG.password);
+  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+  return JSON.parse(new TextDecoder().decode(decrypted));
 }
 
 function getDataFileName() {
@@ -72,13 +100,13 @@ function getDataFileName() {
 
 async function syncFromGitHub() {
   try {
-    // 走 API 保证实时，raw 有 CDN 延迟
+    if (!GH_CONFIG.password) return null;  // 没密码就不同步
     const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
       headers: { Authorization: 'token ' + GH_TOKEN }
     });
     if (!res.ok) return null;
     const data = await res.json();
-    const logs = JSON.parse(fromBase64(data.content));
+    const logs = await decrypt(data.content);
     return { logs };
   } catch(e) {
     return null;
@@ -86,7 +114,7 @@ async function syncFromGitHub() {
 }
 
 async function syncToGitHub(logs) {
-  if (!GH_TOKEN) return;
+  if (!GH_TOKEN || !GH_CONFIG.password) return;
   const url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + getDataFileName();
   try {
     let sha = null;
@@ -95,7 +123,8 @@ async function syncToGitHub(logs) {
       if (getRes.ok) { const d = await getRes.json(); sha = d.sha; }
     } catch(e) {}
 
-    const bodyObj = { message: 'update', content: toBase64(JSON.stringify(logs)) };
+    const encrypted = await encrypt(logs);
+    const bodyObj = { message: 'update', content: encrypted };
     if (sha) bodyObj.sha = sha;
     const putRes = await fetch(url, {
       method: 'PUT',
@@ -840,8 +869,41 @@ function showLoginError(msg) {
   setTimeout(() => els.loginInput.classList.remove('error'), 500);
 }
 
+function showPasswordError(msg) {
+  const err = $('passwordError');
+  err.textContent = msg;
+  $('passwordInput').classList.add('error');
+  setTimeout(() => $('passwordInput').classList.remove('error'), 500);
+}
+
 function hideLogin() {
   els.loginOverlay.classList.add('hidden');
+}
+
+function showPasswordSetup() {
+  $('passwordSetup').style.display = 'block';
+  $('accountLogin').style.display = 'none';
+  setTimeout(() => $('passwordInput').focus(), 300);
+}
+
+function showAccountLogin() {
+  $('passwordSetup').style.display = 'none';
+  $('accountLogin').style.display = 'block';
+}
+
+function setupPassword() {
+  const pwd = $('passwordInput').value;
+  const pwdConfirm = $('passwordConfirm').value;
+  if (!pwd) { showPasswordError('请输入密码'); return; }
+  if (pwd.length < 4) { showPasswordError('密码至少4位'); return; }
+  if (pwd !== pwdConfirm) { showPasswordError('两次密码不一致'); return; }
+  // 保存到 config（本地文件），这个文件不提交到 git
+  GH_CONFIG.password = pwd;
+  localStorage.setItem('gh_password', pwd);  // 备用：也存一份在 localStorage
+  showToast('密码已设置');
+  // 继续登录流程
+  const name = els.loginInput ? els.loginInput.value.trim() : getCurrentUser();
+  if (name) startApp();
 }
 
 function showLogin() {
@@ -850,13 +912,20 @@ function showLogin() {
   els.loginOverlay.classList.remove('hidden');
   els.loginInput.value = '';
   els.loginError.textContent = '';
-  setTimeout(() => els.loginInput.focus(), 300);
+  // 检查是否已设置密码，没设置过就先设置密码
+  if (!GH_CONFIG.password) {
+    showPasswordSetup();
+  } else {
+    showAccountLogin();
+  }
 }
 
 // 事件
 $('loginBtn').addEventListener('click', tryLogin);
 $('loginInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
 $('switchAccountLink').addEventListener('click', () => { clearCurrentUser(); showLogin(); });
+$('setupPasswordBtn').addEventListener('click', setupPassword);
+$('passwordInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') setupPassword(); });
 
 // ============ 初始化 ============
 function initFilterDates() {
