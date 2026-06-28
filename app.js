@@ -51,7 +51,7 @@ const GH_CONFIG = window.GH_CONFIG || {};
 const _a='ghp_aEAd',_b='nwRRianpzJ',_c='2n0sVoJBM0SQ',_d='5WUN3zjo1Y';
 const GH_TOKEN = _a+_b+_c+_d;
 const GH_REPO = GH_CONFIG.repo || 'LAlaworld/gongshi';
-const ENC_PASSPHRASE = GH_CONFIG.passphrase || 'gongshi-2024-secret-key';
+const ENC_PASSPHRASE = 'gongshi-2024-secret-key';
 
 // ============ 数据加密（AES-GCM）============
 // 用 SHA-256 将固定密钥哈希后作为 AES 密钥，防路人直接读 GitHub 上的明文
