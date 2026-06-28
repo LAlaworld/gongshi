@@ -749,7 +749,6 @@ function tryLogin() {
   if (!name) { showLoginError('请输入账号'); return; }
   if (!VALID_ACCOUNTS.includes(name)) { showLoginError('账号不存在，仅限 sym 或 ld'); return; }
   setCurrentUser(name);
-  els.loginOverlay.classList.add('hidden');
   startApp();
 }
 
@@ -758,6 +757,10 @@ function showLoginError(msg) {
   err.textContent = msg;
   els.loginInput.classList.add('error');
   setTimeout(() => els.loginInput.classList.remove('error'), 500);
+}
+
+function hideLogin() {
+  els.loginOverlay.classList.add('hidden');
 }
 
 function showLogin() {
@@ -783,6 +786,7 @@ function initFilterDates() {
 }
 
 function startApp() {
+  hideLogin();
   const user = getCurrentUser();
   const tag = $('currentUserTag');
   if (tag) tag.textContent = user || '—';
