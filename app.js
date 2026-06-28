@@ -866,7 +866,10 @@ async function startApp() {
   // 从 GitHub 拉取最新数据，与本地合并
   const remote = await syncFromGitHub();
   if (remote && remote.logs) {
-    saveLogsLocal(remote.logs);
+    const local = getLogs();
+    if (remote.logs.length >= local.length) {
+      saveLogsLocal(remote.logs);
+    }
   }
 
   initFilterDates();
