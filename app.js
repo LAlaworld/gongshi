@@ -91,8 +91,8 @@ async function syncToGitHub(logs) {
       sha = data.sha;
     }
 
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(logs))));
-    const body = JSON.stringify({ message: 'update ' + getDataFileName(), content, sha });
+    const content = btoa(JSON.stringify(logs));
+    const body = JSON.stringify({ message: 'update ' + getDataFileName(), content: content, sha: sha });
     const putRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
       method: 'PUT',
       headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
@@ -905,12 +905,13 @@ async function startApp() {
   if (getToken()) {
     const remote = await syncFromGitHub();
     if (remote && remote.logs) {
-      const localKey = getStorageKey();
-      const local = localStorage.getItem(localKey);
-      if (!local || remote.logs.length >= JSON.parse(local).length) {
-        // 远程数据更新或本地为空，用远程覆盖本地
-        saveLogsLocal(remote.logs);
-      }
+      const localLogs = getLogs();
+      // 合并：以 id 去重，远程优先，保留本地独有的
+      const remoteIds = new Set(remote.logs.map(l => l.id));
+      const merged = [...remote.logs];
+      localLogs.forEach(l => { if (!remoteIds.has(l.id)) merged.push(l); });
+      merged.sort((a, b) => b.createdAt - a.createdAt);
+      saveLogsLocal(merged);
     }
   } else {
     updateSyncStatusNoToken();
