@@ -95,8 +95,14 @@ async function syncFromGitHub() {
     });
     if (!res.ok) return null;
     const data = await res.json();
-    const logs = await decrypt(data.content);
-    return { logs };
+    // 先尝试解密，失败则当作明文 JSON
+    try {
+      const logs = await decrypt(data.content);
+      return { logs };
+    } catch(e) {
+      const logs = JSON.parse(atob(data.content));
+      return { logs };
+    }
   } catch(e) {
     return null;
   }
