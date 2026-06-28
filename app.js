@@ -51,15 +51,16 @@ const GH_CONFIG = window.GH_CONFIG || {};
 const _a='ghp_aEAd',_b='nwRRianpzJ',_c='2n0sVoJBM0SQ',_d='5WUN3zjo1Y';
 const GH_TOKEN = _a+_b+_c+_d;
 const GH_REPO = GH_CONFIG.repo || 'LAlaworld/gongshi';
-const ENC_PASSPHRASE = 'gongshi-2024-secret-key';
+
 
 // ============ 数据加密（AES-GCM）============
-// 用 SHA-256 将固定密钥哈希后作为 AES 密钥，防路人直接读 GitHub 上的明文
+// 固定 AES-256 密钥（base64），防路人直接读 GitHub 上的明文
+const ENC_KEY_B64 = 'glcyc+a9uuTSEW3oHqLnJB6LT3dQD0HMQ8aInQeguvg=';
 let _cachedKey = null;
 async function getKey() {
   if (_cachedKey) return _cachedKey;
-  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ENC_PASSPHRASE));
-  _cachedKey = await crypto.subtle.importKey('raw', hash, 'AES-GCM', false, ['encrypt', 'decrypt']);
+  const keyBytes = Uint8Array.from(atob(ENC_KEY_B64), c => c.charCodeAt(0));
+  _cachedKey = await crypto.subtle.importKey('raw', keyBytes, 'AES-GCM', false, ['encrypt', 'decrypt']);
   return _cachedKey;
 }
 
