@@ -908,14 +908,10 @@ async function startApp() {
   const tag = $('currentUserTag');
   if (tag) tag.textContent = user || '—';
 
-  // 从 GitHub 拉取最新数据，与本地合并（按 id 去重，远程优先）
+  // 从 GitHub 拉取最新数据，远程优先，直接覆盖本地
   const remote = await syncFromGitHub();
   if (remote && remote.logs) {
-    const localLogs = getLogs(true);  // 包含已删除的
-    const merged = new Map();
-    localLogs.forEach(l => merged.set(l.id, l));
-    remote.logs.forEach(l => merged.set(l.id, l));  // 远程覆盖同 id（含删除标记）
-    saveLogsLocal([...merged.values()]);
+    saveLogsLocal(remote.logs);
   }
 
   initFilterDates();
