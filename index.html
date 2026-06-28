@@ -156,23 +156,10 @@
       </svg>
     </div>
     <h2 class="login-title">工时记录</h2>
-
-    <!-- 密码设置（首次使用显示设置，后续只需输入） -->
-    <div id="passwordSetup" style="display:none">
-      <p class="login-desc" id="setupDesc">设置数据加密密码（用于云端同步加密，请牢记）</p>
-      <input class="login-input" id="passwordInput" type="password" placeholder="设置密码" maxlength="50" autocomplete="off">
-      <input class="login-input" id="passwordConfirm" type="password" placeholder="确认密码" maxlength="50" autocomplete="off" style="margin-top:8px">
-      <button class="login-btn" id="setupPasswordBtn">确认</button>
-      <p class="login-error" id="passwordError"></p>
-    </div>
-
-    <!-- 账号登录 -->
-    <div id="accountLogin">
-      <p class="login-desc">请输入你的账号</p>
-      <input class="login-input" id="loginInput" placeholder="输入账号名" maxlength="20" autocomplete="off">
-      <button class="login-btn" id="loginBtn">进入</button>
-      <p class="login-error" id="loginError"></p>
-    </div>
+    <p class="login-desc">请输入你的账号</p>
+    <input class="login-input" id="loginInput" placeholder="输入账号名" maxlength="20" autocomplete="off">
+    <button class="login-btn" id="loginBtn">进入</button>
+    <p class="login-error" id="loginError"></p>
   </div>
 </div>
 

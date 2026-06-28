@@ -48,37 +48,26 @@ function getStorageKey() { return DATA_PREFIX + getCurrentUser(); }
 
 // ============ GitHub 同步配置 ============
 const GH_CONFIG = window.GH_CONFIG || {};
-// 如果 config.js 没有密码，尝试从 sessionStorage 读取（关闭浏览器后自动清除）
-if (!GH_CONFIG.password) {
-  GH_CONFIG.password = sessionStorage.getItem('gh_password') || '';
-}
-// 迁移旧数据：老版本密码存在 localStorage，迁移到 sessionStorage 并设标记
-if (!GH_CONFIG.password) {
-  const oldPwd = localStorage.getItem('gh_password');
-  if (oldPwd) {
-    GH_CONFIG.password = oldPwd;
-    sessionStorage.setItem('gh_password', oldPwd);
-    localStorage.setItem('has_encryption_pwd', '1');
-    localStorage.removeItem('gh_password');
-  }
-}
 const _a='ghp_aEAd',_b='nwRRianpzJ',_c='2n0sVoJBM0SQ',_d='5WUN3zjo1Y';
 const GH_TOKEN = _a+_b+_c+_d;
 const GH_REPO = GH_CONFIG.repo || 'LAlaworld/gongshi';
+const ENC_PASSPHRASE = GH_CONFIG.passphrase || 'gongshi-2024-secret-key';
 
 // ============ 数据加密（AES-GCM）============
-// 用 SHA-256 将密码哈希后直接作为 AES 密钥，简单够用，防路人直接读明文
-async function deriveKey(password) {
-  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
-  return crypto.subtle.importKey('raw', hash, 'AES-GCM', false, ['encrypt', 'decrypt']);
+// 用 SHA-256 将固定密钥哈希后作为 AES 密钥，防路人直接读 GitHub 上的明文
+let _cachedKey = null;
+async function getKey() {
+  if (_cachedKey) return _cachedKey;
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ENC_PASSPHRASE));
+  _cachedKey = await crypto.subtle.importKey('raw', hash, 'AES-GCM', false, ['encrypt', 'decrypt']);
+  return _cachedKey;
 }
 
 async function encrypt(data) {
-  const key = await deriveKey(GH_CONFIG.password);
+  const key = await getKey();
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const encoded = new TextEncoder().encode(JSON.stringify(data));
   const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
-  // 合并 IV + 密文，方便存储
   const combined = new Uint8Array(iv.length + cipher.byteLength);
   combined.set(iv);
   combined.set(new Uint8Array(cipher), iv.length);
@@ -86,11 +75,10 @@ async function encrypt(data) {
 }
 
 async function decrypt(b64data) {
-  if (!GH_CONFIG.password) throw new Error('未设置密码');
   const combined = Uint8Array.from(atob(b64data), c => c.charCodeAt(0));
   const iv = combined.slice(0, 12);
   const data = combined.slice(12);
-  const key = await deriveKey(GH_CONFIG.password);
+  const key = await getKey();
   const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
   return JSON.parse(new TextDecoder().decode(decrypted));
 }
@@ -102,7 +90,6 @@ function getDataFileName() {
 
 async function syncFromGitHub() {
   try {
-    if (!GH_CONFIG.password) return null;  // 没密码就不同步
     const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
       headers: { Authorization: 'token ' + GH_TOKEN }
     });
@@ -116,7 +103,7 @@ async function syncFromGitHub() {
 }
 
 async function syncToGitHub(logs) {
-  if (!GH_TOKEN || !GH_CONFIG.password) return;
+  if (!GH_TOKEN) return;
   const url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + getDataFileName();
   try {
     let sha = null;
@@ -871,74 +858,8 @@ function showLoginError(msg) {
   setTimeout(() => els.loginInput.classList.remove('error'), 500);
 }
 
-function showPasswordError(msg) {
-  const err = $('passwordError');
-  err.textContent = msg;
-  $('passwordInput').classList.add('error');
-  setTimeout(() => $('passwordInput').classList.remove('error'), 500);
-}
-
 function hideLogin() {
   els.loginOverlay.classList.add('hidden');
-}
-
-const HAS_PWD_FLAG = 'has_encryption_pwd';
-
-function showPasswordSetup() {
-  // 首次设置密码：显示确认字段
-  $('passwordSetup').style.display = 'block';
-  $('passwordConfirm').style.display = '';
-  $('setupPasswordBtn').textContent = '设置密码';
-  $('setupDesc').textContent = '设置数据加密密码（用于云端同步加密，请牢记）';
-  $('accountLogin').style.display = 'none';
-  $('passwordInput').value = '';
-  $('passwordConfirm').value = '';
-  $('passwordError').textContent = '';
-  setTimeout(() => $('passwordInput').focus(), 300);
-}
-
-function showPasswordEntry() {
-  // 已有密码，只需输入：隐藏确认字段
-  $('passwordSetup').style.display = 'block';
-  $('passwordConfirm').style.display = 'none';
-  $('setupPasswordBtn').textContent = '确认';
-  $('setupDesc').textContent = '请输入你的加密密码';
-  $('accountLogin').style.display = 'none';
-  $('passwordInput').value = '';
-  $('passwordError').textContent = '';
-  setTimeout(() => $('passwordInput').focus(), 300);
-}
-
-function showAccountLogin() {
-  $('passwordSetup').style.display = 'none';
-  $('accountLogin').style.display = 'block';
-}
-
-// 首次设置密码
-function setupPassword() {
-  const pwd = $('passwordInput').value;
-  const pwdConfirm = $('passwordConfirm').value;
-  if (!pwd) { showPasswordError('请输入密码'); return; }
-  if (pwd.length < 4) { showPasswordError('密码至少4位'); return; }
-  if (pwd !== pwdConfirm) { showPasswordError('两次密码不一致'); return; }
-  GH_CONFIG.password = pwd;
-  sessionStorage.setItem('gh_password', pwd);
-  localStorage.setItem(HAS_PWD_FLAG, '1');
-  showToast('密码已设置');
-  const name = els.loginInput ? els.loginInput.value.trim() : getCurrentUser();
-  if (name) startApp();
-}
-
-// 已有密码，输入后进入
-function enterPassword() {
-  const pwd = $('passwordInput').value;
-  if (!pwd) { showPasswordError('请输入密码'); return; }
-  GH_CONFIG.password = pwd;
-  sessionStorage.setItem('gh_password', pwd);
-  $('passwordError').textContent = '';
-  // 继续登录流程
-  const name = els.loginInput ? els.loginInput.value.trim() : getCurrentUser();
-  if (name) startApp();
 }
 
 function showLogin() {
@@ -947,36 +868,12 @@ function showLogin() {
   els.loginOverlay.classList.remove('hidden');
   els.loginInput.value = '';
   els.loginError.textContent = '';
-  // 检查密码状态
-  if (!GH_CONFIG.password) {
-    if (localStorage.getItem(HAS_PWD_FLAG)) {
-      // 曾经设置过密码，只需输入
-      showPasswordEntry();
-    } else {
-      // 首次使用，设置密码
-      showPasswordSetup();
-    }
-  } else {
-    showAccountLogin();
-  }
-}
-
-// 处理密码表单提交（根据当前模式判断是设置还是输入）
-function handlePasswordSubmit() {
-  if ($('passwordConfirm').style.display === 'none') {
-    enterPassword();
-  } else {
-    setupPassword();
-  }
 }
 
 // 事件
 $('loginBtn').addEventListener('click', tryLogin);
 $('loginInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
 $('switchAccountLink').addEventListener('click', () => { clearCurrentUser(); showLogin(); });
-$('setupPasswordBtn').addEventListener('click', handlePasswordSubmit);
-$('passwordInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') handlePasswordSubmit(); });
-$('passwordConfirm').addEventListener('keydown', (e) => { if (e.key === 'Enter') handlePasswordSubmit(); });
 
 // ============ 初始化 ============
 function initFilterDates() {
