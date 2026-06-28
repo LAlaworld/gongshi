@@ -1,4 +1,4 @@
-const CACHE = 'gongshi-v3';
+const CACHE = 'gongshi-v4';
 const FILES = [
   '/gongshi/',
   '/gongshi/index.html',
