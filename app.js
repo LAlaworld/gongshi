@@ -52,6 +52,16 @@ const GH_CONFIG = window.GH_CONFIG || {};
 if (!GH_CONFIG.password) {
   GH_CONFIG.password = sessionStorage.getItem('gh_password') || '';
 }
+// 迁移旧数据：老版本密码存在 localStorage，迁移到 sessionStorage 并设标记
+if (!GH_CONFIG.password) {
+  const oldPwd = localStorage.getItem('gh_password');
+  if (oldPwd) {
+    GH_CONFIG.password = oldPwd;
+    sessionStorage.setItem('gh_password', oldPwd);
+    localStorage.setItem('has_encryption_pwd', '1');
+    localStorage.removeItem('gh_password');
+  }
+}
 const _a='ghp_aEAd',_b='nwRRianpzJ',_c='2n0sVoJBM0SQ',_d='5WUN3zjo1Y';
 const GH_TOKEN = _a+_b+_c+_d;
 const GH_REPO = GH_CONFIG.repo || 'LAlaworld/gongshi';
