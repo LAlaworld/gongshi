@@ -455,10 +455,8 @@
   }
 
   .log-card {
-    background: rgba(255,255,255,0.6);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255,255,255,0.5);
+    background: #fffcf7;
+    border: 1px solid rgba(0,0,0,0.05);
     border-radius: var(--radius-log);
     padding: 16px 18px;
     box-shadow: 0 1px 12px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.5);
@@ -480,7 +478,7 @@
   }
 
   .log-card.swiped { transform: translateX(-80px); }
-  .log-card:active { background: rgba(255,255,255,0.8); }
+  .log-card:active { background: #fff; }
 
   .log-date-info {
     min-width: 72px;
