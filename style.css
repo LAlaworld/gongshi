@@ -243,12 +243,12 @@
   }
 
   .stat-card {
-    background: rgba(255,255,255,0.65);
+    background: rgba(255,255,255,0.35);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.7);
     border-radius: var(--radius-card);
     padding: 20px 16px;
     box-shadow: 0 2px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6);
@@ -301,12 +301,12 @@
 
   /* ---- 筛选区 (Liquid Glass) ---- */
   .filter-section {
-    background: rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.35);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.7);
     border-radius: var(--radius-card);
     padding: 16px 20px;
     box-shadow: 0 2px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6);
@@ -418,7 +418,7 @@
     padding: 8px 14px;
     border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.5);
-    background: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.35);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     -webkit-backface-visibility: hidden;
@@ -432,7 +432,7 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  .export-btn:hover { background: rgba(255,255,255,0.7); }
+  .export-btn:hover { background: rgba(255,255,255,0.55); }
   .export-btn:active { transform: scale(0.96); opacity: 0.7; }
 
   .export-btn svg { width: 16px; height: 16px; }
@@ -567,12 +567,12 @@
   .empty-state {
     text-align: center;
     padding: 60px 20px;
-    background: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.3);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.7);
     border-radius: var(--radius-card);
     box-shadow: 0 1px 12px rgba(0,0,0,0.03);
   }
@@ -903,7 +903,7 @@
     .log-card-delete-bg { display: none; }
 
     .stat-card:hover {
-      background: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.5);
     }
 
     .add-btn { bottom:40px; right:40px; width:60px; height:60px; }
