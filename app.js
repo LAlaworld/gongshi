@@ -51,6 +51,20 @@ const _a='ghp_aEAd',_b='nwRRianpzJ',_c='2n0sVoJBM0SQ',_d='5WUN3zjo1Y';
 const GH_TOKEN = _a+_b+_c+_d;
 const GH_REPO = 'LAlaworld/gongshi';
 
+function toBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+
+function fromBase64(b64) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
 function getDataFileName() {
   const user = getCurrentUser();
   return 'data_' + user + '.json';
@@ -79,7 +93,7 @@ async function syncToGitHub(logs) {
       if (getRes.ok) { const d = await getRes.json(); sha = d.sha; }
     } catch(e) { /* GET 失败可能因为文件不存在，继续 PUT */ }
 
-    const bodyObj = { message: 'update', content: btoa(JSON.stringify(logs)) };
+    const bodyObj = { message: 'update', content: toBase64(JSON.stringify(logs)) };
     if (sha) bodyObj.sha = sha;
     const putRes = await fetch(url, {
       method: 'PUT',
