@@ -32,10 +32,11 @@
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'HarmonyOS Sans', sans-serif;
     background:
-      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(251,191,36,0.18) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 80% 20%, rgba(245,158,11,0.12) 0%, transparent 55%),
-      radial-gradient(ellipse 50% 40% at 60% 70%, rgba(251,191,36,0.1) 0%, transparent 50%),
-      radial-gradient(ellipse 70% 50% at 10% 60%, rgba(245,158,11,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 60% at 15% 5%, rgba(251,191,36,0.3) 0%, transparent 55%),
+      radial-gradient(ellipse 55% 45% at 85% 15%, rgba(245,158,11,0.25) 0%, transparent 50%),
+      radial-gradient(ellipse 45% 55% at 70% 80%, rgba(251,191,36,0.22) 0%, transparent 50%),
+      radial-gradient(ellipse 65% 40% at 5% 70%, rgba(217,119,6,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 35% at 50% 50%, rgba(254,243,199,0.5) 0%, transparent 60%),
       #fef9ee;
     min-height: 100vh;
     color: var(--stone-800);
