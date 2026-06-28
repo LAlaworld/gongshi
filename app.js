@@ -47,10 +47,8 @@ function clearCurrentUser() { localStorage.removeItem(CURRENT_USER_KEY); }
 function getStorageKey() { return DATA_PREFIX + getCurrentUser(); }
 
 // ============ GitHub 同步 ============
+const GH_TOKEN = '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';
 const GH_REPO = 'LAlaworld/gongshi';
-const GH_TOKEN_KEY = 'gh_token';
-
-function getToken() { return localStorage.getItem(GH_TOKEN_KEY); }
 
 function getDataFileName() {
   const user = getCurrentUser();
@@ -70,12 +68,11 @@ async function syncFromGitHub() {
 }
 
 async function syncToGitHub(logs) {
-  const token = getToken();
-  if (!token) return;
+  if (!GH_TOKEN) return;
   try {
     let sha = null;
     const getRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
-      headers: { Authorization: 'token ' + token }
+      headers: { Authorization: 'token ' + GH_TOKEN }
     });
     if (getRes.ok) {
       const data = await getRes.json();
@@ -86,7 +83,7 @@ async function syncToGitHub(logs) {
     const body = JSON.stringify({ message: 'update ' + getDataFileName(), content: content, sha: sha });
     await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
       method: 'PUT',
-      headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+      headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
       body
     });
   } catch(e) { /* 静默失败，下次同步时会补推 */ }
@@ -833,14 +830,6 @@ function showLogin() {
 $('loginBtn').addEventListener('click', tryLogin);
 $('loginInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
 $('switchAccountLink').addEventListener('click', () => { clearCurrentUser(); showLogin(); });
-$('settingsLink').addEventListener('click', () => {
-  const tok = prompt('输入 GitHub Token 以启用写入同步：\n（不输入也能看数据，只是不能保存）', getToken() || '');
-  if (tok !== null) {
-    localStorage.setItem(GH_TOKEN_KEY, tok.trim());
-    if (tok.trim()) showToast('写入权限已配置');
-    else localStorage.removeItem(GH_TOKEN_KEY);
-  }
-});
 
 // ============ 初始化 ============
 function initFilterDates() {
