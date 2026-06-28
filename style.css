@@ -409,10 +409,8 @@
     gap: 5px;
     padding: 8px 14px;
     border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.5);
-    background: rgba(255,255,255,0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    border: none;
+    background: rgba(120,113,108,0.08);
     color: var(--stone-600);
     font-size: 13px;
     font-weight: 500;
@@ -422,7 +420,7 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  .export-btn:hover { background: rgba(255,255,255,0.65); }
+  .export-btn:hover { background: rgba(120,113,108,0.14); }
   .export-btn:active { transform: scale(0.96); opacity: 0.7; }
 
   .export-btn svg { width: 16px; height: 16px; }
@@ -461,13 +459,11 @@
   }
 
   .log-card {
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.7);
+    background: #fffdf7;
+    border: 1px solid rgba(0,0,0,0.06);
     border-radius: var(--radius-log);
     padding: 16px 18px;
-    box-shadow: 0 1px 12px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.8);
     display: flex;
     align-items: center;
     gap: 14px;
@@ -486,7 +482,7 @@
   }
 
   .log-card.swiped { transform: translateX(-80px); }
-  .log-card:active { background: rgba(255,255,255,0.72); }
+  .log-card:active { background: #fff; }
 
   .log-date-info {
     min-width: 72px;
