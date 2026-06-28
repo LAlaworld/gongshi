@@ -900,10 +900,14 @@ async function startApp() {
   const tag = $('currentUserTag');
   if (tag) tag.textContent = user || '—';
 
-  // 从 GitHub 拉取最新数据，与本地合并
+  // 从 GitHub 拉取最新数据，与本地合并（按 id 去重，远程优先）
   const remote = await syncFromGitHub();
   if (remote && remote.logs) {
-    saveLogsLocal(remote.logs);
+    const localLogs = getLogs();
+    const merged = new Map();
+    localLogs.forEach(l => merged.set(l.id, l));
+    remote.logs.forEach(l => merged.set(l.id, l));  // 远程覆盖同 id
+    saveLogsLocal([...merged.values()]);
   }
 
   initFilterDates();
