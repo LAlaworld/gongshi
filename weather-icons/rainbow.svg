@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <!-- Rainbow arcs (5 concentric) from outer to inner -->
+  <path d="M8 40 A24 24 0 0 1 56 40" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M12 40 A20 20 0 0 1 52 40" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M16 40 A16 16 0 0 1 48 40" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M20 40 A12 12 0 0 1 44 40" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M24 40 A8 8 0 0 1 40 40" stroke="#6366F1" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- Left cloud -->
+  <path d="M6 44 Q6 40 10 38 Q12 34 16 34 Q20 34 22 38 Q24 38 24 42 Q24 44 22 44 Z" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right cloud -->
+  <path d="M40 44 Q40 40 44 38 Q46 34 50 34 Q54 34 56 38 Q58 38 58 42 Q58 44 56 44 Z" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

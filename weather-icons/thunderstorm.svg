@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <!-- Dark cloud -->
+  <path d="M12 28 Q12 20 20 18 Q22 10 30 10 Q38 10 40 18 Q48 18 48 26 Q48 28 46 28 Z" stroke="#64748B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Lightning bolt zigzag -->
+  <polyline points="30,32 26,42 34,42 28,56" stroke="#6366F1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 2-3 rain drops -->
+  <line x1="18" y1="34" x2="16" y2="40" stroke="#6366F1" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="44" y1="34" x2="42" y2="40" stroke="#6366F1" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

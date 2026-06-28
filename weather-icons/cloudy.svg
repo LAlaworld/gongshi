@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <!-- Back cloud (lighter) -->
+  <path d="M18 38 Q18 30 26 28 Q28 20 36 20 Q44 20 46 28 Q52 28 52 34 Q52 38 48 38 Z" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Front cloud (slightly larger, darker) -->
+  <path d="M12 44 Q12 36 20 34 Q22 26 30 26 Q38 26 40 34 Q46 34 46 40 Q46 44 42 44 Z" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+</svg>

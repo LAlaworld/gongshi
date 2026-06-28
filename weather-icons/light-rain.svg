@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <!-- Cloud -->
+  <path d="M14 32 Q14 24 22 22 Q24 14 32 14 Q40 14 42 22 Q50 22 50 30 Q50 32 48 32 Z" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 3 diagonal rain drops -->
+  <line x1="22" y1="38" x2="20" y2="46" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="32" y1="40" x2="30" y2="48" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="42" y1="38" x2="40" y2="46" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

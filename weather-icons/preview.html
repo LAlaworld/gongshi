@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather Icons Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-bottom: 40px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    cursor: default;
+  }
+  .card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+  }
+  .card svg {
+    width: 56px;
+    height: 56px;
+  }
+  .card-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 500;
+    text-align: center;
+  }
+  .card-filename {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .section-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 32px 0 16px;
+    padding-left: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Weather Icons</h1>
+  <p class="subtitle">Refined linear style &middot; 64&times;64 &middot; Stroke 1.5px</p>
+
+  <div class="section-label">Daytime</div>
+  <div class="grid">
+    <div class="card">
+      <img src="sunny.svg" alt="Sunny">
+      <span class="card-label">Sunny</span>
+      <span class="card-filename">sunny.svg</span>
+    </div>
+    <div class="card">
+      <img src="partly-cloudy.svg" alt="Partly Cloudy">
+      <span class="card-label">Partly Cloudy</span>
+      <span class="card-filename">partly-cloudy.svg</span>
+    </div>
+    <div class="card">
+      <img src="cloudy.svg" alt="Cloudy">
+      <span class="card-label">Cloudy</span>
+      <span class="card-filename">cloudy.svg</span>
+    </div>
+    <div class="card">
+      <img src="overcast.svg" alt="Overcast">
+      <span class="card-label">Overcast</span>
+      <span class="card-filename">overcast.svg</span>
+    </div>
+  </div>
+
+  <div class="section-label">Rain</div>
+  <div class="grid">
+    <div class="card">
+      <img src="light-rain.svg" alt="Light Rain">
+      <span class="card-label">Light Rain</span>
+      <span class="card-filename">light-rain.svg</span>
+    </div>
+    <div class="card">
+      <img src="heavy-rain.svg" alt="Heavy Rain">
+      <span class="card-label">Heavy Rain</span>
+      <span class="card-filename">heavy-rain.svg</span>
+    </div>
+    <div class="card">
+      <img src="thunderstorm.svg" alt="Thunderstorm">
+      <span class="card-label">Thunderstorm</span>
+      <span class="card-filename">thunderstorm.svg</span>
+    </div>
+    <div class="card">
+      <img src="sleet.svg" alt="Sleet">
+      <span class="card-label">Sleet</span>
+      <span class="card-filename">sleet.svg</span>
+    </div>
+    <div class="card">
+      <img src="hail.svg" alt="Hail">
+      <span class="card-label">Hail</span>
+      <span class="card-filename">hail.svg</span>
+    </div>
+  </div>
+
+  <div class="section-label">Snow</div>
+  <div class="grid">
+    <div class="card">
+      <img src="snow.svg" alt="Snow">
+      <span class="card-label">Snow</span>
+      <span class="card-filename">snow.svg</span>
+    </div>
+    <div class="card">
+      <img src="heavy-snow.svg" alt="Heavy Snow">
+      <span class="card-label">Heavy Snow</span>
+      <span class="card-filename">heavy-snow.svg</span>
+    </div>
+  </div>
+
+  <div class="section-label">Atmosphere</div>
+  <div class="grid">
+    <div class="card">
+      <img src="fog.svg" alt="Fog">
+      <span class="card-label">Fog</span>
+      <span class="card-filename">fog.svg</span>
+    </div>
+    <div class="card">
+      <img src="wind.svg" alt="Wind">
+      <span class="card-label">Wind</span>
+      <span class="card-filename">wind.svg</span>
+    </div>
+    <div class="card">
+      <img src="tornado.svg" alt="Tornado">
+      <span class="card-label">Tornado</span>
+      <span class="card-filename">tornado.svg</span>
+    </div>
+  </div>
+
+  <div class="section-label">Special</div>
+  <div class="grid">
+    <div class="card">
+      <img src="clear-night.svg" alt="Clear Night">
+      <span class="card-label">Clear Night</span>
+      <span class="card-filename">clear-night.svg</span>
+    </div>
+    <div class="card">
+      <img src="rainbow.svg" alt="Rainbow">
+      <span class="card-label">Rainbow</span>
+      <span class="card-filename">rainbow.svg</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
