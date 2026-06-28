@@ -32,9 +32,11 @@
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'HarmonyOS Sans', sans-serif;
     background:
-      radial-gradient(ellipse 70% 50% at 20% 10%, rgba(255,255,255,0.7) 0%, transparent 55%),
-      radial-gradient(ellipse 50% 40% at 80% 25%, rgba(250,250,249,0.6) 0%, transparent 50%),
-      radial-gradient(ellipse 45% 50% at 70% 75%, rgba(245,245,244,0.5) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 55% at 10% 5%, rgba(148,163,184,0.25) 0%, transparent 50%),
+      radial-gradient(ellipse 55% 45% at 85% 10%, rgba(203,213,225,0.22) 0%, transparent 48%),
+      radial-gradient(ellipse 50% 40% at 75% 80%, rgba(148,163,184,0.2) 0%, transparent 48%),
+      radial-gradient(ellipse 60% 50% at 5% 75%, rgba(226,232,240,0.28) 0%, transparent 50%),
+      radial-gradient(ellipse 35% 35% at 50% 50%, rgba(250,250,249,0.55) 0%, transparent 55%),
       #fef9ee;
     min-height: 100vh;
     color: var(--stone-800);
@@ -461,10 +463,10 @@
   }
 
   .log-card {
-    background: rgba(255,255,255,0.65);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid rgba(255,255,255,0.55);
     border-radius: var(--radius-log);
     padding: 16px 18px;
     box-shadow: 0 1px 12px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6);
