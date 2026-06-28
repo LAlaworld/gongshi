@@ -93,32 +93,35 @@ async function syncFromGitHub() {
     const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
       headers: { Authorization: 'token ' + GH_TOKEN }
     });
-    if (!res.ok) return null;
+    if (!res.ok) { console.error('GitHub fetch 失败:', res.status); return null; }
     const data = await res.json();
-    // 先尝试解密，失败则当作明文 JSON
     try {
       const logs = await decrypt(data.content);
+      console.log('GitHub 数据已解密，条数:', logs.length);
       return { logs };
     } catch(e) {
+      console.log('解密失败，尝试明文:', e.message);
       const logs = JSON.parse(atob(data.content));
       return { logs };
     }
   } catch(e) {
+    console.error('syncFromGitHub 异常:', e.message);
     return null;
   }
 }
 
 async function syncToGitHub(logs) {
-  if (!GH_TOKEN) return;
+  if (!GH_TOKEN) { console.error('syncToGitHub: 缺少 GH_TOKEN'); return; }
   const url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + getDataFileName();
   try {
     let sha = null;
     try {
       const getRes = await fetch(url, { headers: { Authorization: 'token ' + GH_TOKEN } });
       if (getRes.ok) { const d = await getRes.json(); sha = d.sha; }
-    } catch(e) {}
+    } catch(e) { console.error('获取 sha 失败:', e.message); }
 
     const encrypted = await encrypt(logs);
+    console.log('加密完成，上传中...');
     const bodyObj = { message: 'update', content: encrypted };
     if (sha) bodyObj.sha = sha;
     const putRes = await fetch(url, {
@@ -128,8 +131,10 @@ async function syncToGitHub(logs) {
     });
     if (putRes.ok) { showToast('已同步'); return; }
     const err = await putRes.json().catch(() => ({}));
+    console.error('GitHub PUT 失败:', putRes.status, err.message);
     showToast('失败: ' + (err.message || putRes.status), true);
   } catch(e) {
+    console.error('syncToGitHub 异常:', e.message);
     showToast('失败: ' + (e.message || e), true);
   }
 }
