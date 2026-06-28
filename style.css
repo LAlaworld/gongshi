@@ -424,7 +424,6 @@
     font-size: 14px;
     font-weight: 700;
     color: #dc2626;
-    pointer-events: none;
     border-radius: var(--radius-log);
   }
 

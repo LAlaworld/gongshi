@@ -377,6 +377,7 @@ function setupSwipeListeners() {
 
   document.querySelectorAll('.log-card-delete-bg').forEach((bg) => {
     bg.addEventListener('click', (e) => {
+      e.stopPropagation();
       deleteLog(bg.parentElement.dataset.id);
     });
   });
