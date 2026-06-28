@@ -31,7 +31,12 @@
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'HarmonyOS Sans', sans-serif;
-    background: #fef9ee;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(251,191,36,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 20%, rgba(245,158,11,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 60% 70%, rgba(251,191,36,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 50% at 10% 60%, rgba(245,158,11,0.08) 0%, transparent 50%),
+      #fef9ee;
     min-height: 100vh;
     color: var(--stone-800);
     -webkit-font-smoothing: antialiased;
@@ -405,8 +410,10 @@
     gap: 5px;
     padding: 8px 14px;
     border-radius: 10px;
-    border: none;
-    background: rgba(120,113,108,0.08);
+    border: 1px solid rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: var(--stone-600);
     font-size: 13px;
     font-weight: 500;
@@ -416,7 +423,7 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  .export-btn:hover { background: rgba(120,113,108,0.14); }
+  .export-btn:hover { background: rgba(255,255,255,0.65); }
   .export-btn:active { transform: scale(0.96); opacity: 0.7; }
 
   .export-btn svg { width: 16px; height: 16px; }
@@ -455,11 +462,13 @@
   }
 
   .log-card {
-    background: #fffcf7;
-    border: 1px solid rgba(0,0,0,0.05);
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.6);
     border-radius: var(--radius-log);
     padding: 16px 18px;
-    box-shadow: 0 1px 12px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.5);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6);
     display: flex;
     align-items: center;
     gap: 14px;
@@ -478,7 +487,7 @@
   }
 
   .log-card.swiped { transform: translateX(-80px); }
-  .log-card:active { background: #fff; }
+  .log-card:active { background: rgba(255,255,255,0.72); }
 
   .log-date-info {
     min-width: 72px;
