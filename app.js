@@ -85,12 +85,14 @@ async function syncToGitHub(logs) {
       headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
       body: JSON.stringify(bodyObj)
     });
-    if (!putRes.ok) {
+    if (putRes.ok) {
+      showToast('已同步到云端');
+    } else {
       const err = await putRes.json().catch(() => ({}));
       showToast('同步失败: ' + (err.message || putRes.status), true);
     }
   } catch(e) {
-    showToast('同步失败，请检查网络', true);
+    showToast('网络错误，未同步', true);
   }
 }
 
