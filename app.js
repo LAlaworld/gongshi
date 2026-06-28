@@ -72,10 +72,13 @@ function getDataFileName() {
 
 async function syncFromGitHub() {
   try {
-    // 公开 repo 直接读 raw，无需 Token
-    const res = await fetch(`https://raw.githubusercontent.com/${GH_REPO}/main/${getDataFileName()}`);
+    // 走 API 保证实时，raw 有 CDN 延迟
+    const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
+      headers: { Authorization: 'token ' + GH_TOKEN }
+    });
     if (!res.ok) return null;
-    const logs = await res.json();
+    const data = await res.json();
+    const logs = JSON.parse(fromBase64(data.content));
     return { logs };
   } catch(e) {
     return null;
@@ -433,7 +436,11 @@ function openModal(existingLog) {
     els.hours.value = existingLog.duration;
     els.shift.value = existingLog.shift || '';
     els.notes.value = existingLog.notes || '';
-
+    $('deleteBtn').style.display = '';
+    $('deleteBtn').onclick = () => {
+      closeModal();
+      deleteLog(existingLog.id);
+    };
   } else {
     // 新增模式
     els.modalTitle.textContent = '新增工时记录';
@@ -444,6 +451,7 @@ function openModal(existingLog) {
     els.hours.value = '';
     els.shift.value = '';
     els.notes.value = '';
+    $('deleteBtn').style.display = 'none';
   }
 
   setTimeout(() => els.hours.focus(), 400);
@@ -866,10 +874,7 @@ async function startApp() {
   // 从 GitHub 拉取最新数据，与本地合并
   const remote = await syncFromGitHub();
   if (remote && remote.logs) {
-    const local = getLogs();
-    if (remote.logs.length >= local.length) {
-      saveLogsLocal(remote.logs);
-    }
+    saveLogsLocal(remote.logs);
   }
 
   initFilterDates();

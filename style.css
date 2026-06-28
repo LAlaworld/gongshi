@@ -679,6 +679,12 @@
     box-shadow: var(--shadow-amber);
   }
   .btn-primary:active { box-shadow: 0 1px 4px rgba(245,158,11,0.3); }
+.btn-danger {
+  background: linear-gradient(135deg, #f87171, var(--red-500));
+  color: white; flex: 0 0 auto; padding: 16px 20px; font-size: 14px;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.3);
+}
+.btn-danger:active { transform: scale(0.96); }
 
 
   /* ---- Toast ---- */
