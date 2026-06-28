@@ -463,12 +463,11 @@
     font-weight: 600;
     color: white;
     border-radius: var(--radius-log);
-    opacity: 0;
-    transition: opacity 0.2s;
+    visibility: hidden;
   }
 
   .log-card-wrapper:has(.log-card.swiped) .log-card-delete-bg {
-    opacity: 1;
+    visibility: visible;
   }
 
   .log-card-delete-bg span {
