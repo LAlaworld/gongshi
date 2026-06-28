@@ -74,21 +74,23 @@ async function syncToGitHub(logs) {
     const getRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
       headers: { Authorization: 'token ' + GH_TOKEN }
     });
-    if (getRes.ok) {
-      const data = await getRes.json();
-      sha = data.sha;
-    }
+    if (getRes.ok) { const data = await getRes.json(); sha = data.sha; }
 
     const content = btoa(JSON.stringify(logs));
     const bodyObj = { message: 'update ' + getDataFileName(), content: content };
     if (sha) bodyObj.sha = sha;
-    const body = JSON.stringify(bodyObj);
-    await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
+    const putRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
       method: 'PUT',
       headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
-      body
+      body: JSON.stringify(bodyObj)
     });
-  } catch(e) { /* 静默失败，下次同步时会补推 */ }
+    if (!putRes.ok) {
+      const err = await putRes.json().catch(() => ({}));
+      showToast('同步失败: ' + (err.message || putRes.status), true);
+    }
+  } catch(e) {
+    showToast('同步失败，请检查网络', true);
+  }
 }
 
 let syncDebounce = null;
