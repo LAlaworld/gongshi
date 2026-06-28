@@ -194,6 +194,28 @@
   }
   .switch-account-link:hover { color: var(--amber-600); }
 
+  /* ---- 设置面板 ---- */
+  .settings-panel {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 400;
+    display: none;
+    padding: 24px;
+    align-items: center;
+    justify-content: center;
+  }
+  .settings-panel.open { display: flex; flex-direction: column; }
+  .settings-desc { font-size: 12px; color: var(--stone-500); margin-bottom: 12px; }
+  .settings-desc a { color: var(--amber-600); }
+  .sync-status { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-top: 8px; }
+  .sync-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--stone-300); margin-right: 6px;
+  }
+  .sync-dot.synced { background: #22c55e; }
+  .sync-dot.syncing { background: var(--amber-400); }
+  .sync-dot.error { background: var(--red-500); }
+
   .weather-item {
     display: flex;
     flex-direction: column;

@@ -46,6 +46,85 @@ function clearCurrentUser() { localStorage.removeItem(CURRENT_USER_KEY); }
 
 function getStorageKey() { return DATA_PREFIX + getCurrentUser(); }
 
+// ============ GitHub 同步 ============
+const GH_TOKEN_KEY = 'gh_token';
+const GH_REPO = 'LAlaworld/gongshi';
+
+function getToken() { return localStorage.getItem(GH_TOKEN_KEY); }
+function setToken(t) { localStorage.setItem(GH_TOKEN_KEY, t); }
+
+function getDataFileName() {
+  const user = getCurrentUser();
+  return 'data_' + user + '.json';
+}
+
+async function syncFromGitHub() {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
+      headers: { Authorization: 'token ' + token }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const content = JSON.parse(atob(data.content));
+    updateSyncStatus('synced', '已同步');
+    return { logs: content, sha: data.sha };
+  } catch(e) {
+    updateSyncStatus('error', '同步失败');
+    return null;
+  }
+}
+
+async function syncToGitHub(logs) {
+  const token = getToken();
+  if (!token) return;
+  updateSyncStatus('syncing', '同步中...');
+  try {
+    // 先获取当前 sha
+    let sha = null;
+    const getRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
+      headers: { Authorization: 'token ' + token }
+    });
+    if (getRes.ok) {
+      const data = await getRes.json();
+      sha = data.sha;
+    }
+
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(logs))));
+    const body = JSON.stringify({ message: 'update ' + getDataFileName(), content, sha });
+    const putRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
+      method: 'PUT',
+      headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+      body
+    });
+    if (putRes.ok) {
+      updateSyncStatus('synced', '已同步');
+    } else {
+      updateSyncStatus('error', '同步失败');
+    }
+  } catch(e) {
+    updateSyncStatus('error', '同步失败');
+  }
+}
+
+let syncDebounce = null;
+function scheduleSync(logs) {
+  clearTimeout(syncDebounce);
+  syncDebounce = setTimeout(() => syncToGitHub(logs), 500);
+}
+
+function updateSyncStatus(cls, text) {
+  const dot = $('syncDot');
+  const txt = $('syncText');
+  if (dot) { dot.className = 'sync-dot ' + cls; }
+  if (txt) { txt.textContent = text; }
+}
+
+function updateSyncStatusNoToken() {
+  updateSyncStatus(getToken() ? 'error' : '', getToken() ? '未同步' : '未配置同步');
+}
+
 // ============ 数据层（按账号隔离）============
 function getLogs() {
   try {
@@ -56,9 +135,14 @@ function getLogs() {
   } catch(e) { return []; }
 }
 
-function saveLogs(logs) {
+function saveLogsLocal(logs) {
   try { localStorage.setItem(getStorageKey(), JSON.stringify(logs)); }
   catch(e) { showToast('保存失败，存储空间不足', true); }
+}
+
+function saveLogs(logs) {
+  saveLogsLocal(logs);
+  scheduleSync(logs);
 }
 
 function generateId() {
@@ -777,6 +861,32 @@ $('loginBtn').addEventListener('click', tryLogin);
 $('loginInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
 $('switchAccountLink').addEventListener('click', () => { clearCurrentUser(); showLogin(); });
 
+// 设置面板
+$('settingsLink').addEventListener('click', () => {
+  const tok = getToken();
+  $('ghTokenInput').value = tok || '';
+  updateSyncStatusNoToken();
+  $('settingsPanel').classList.add('open');
+});
+$('settingsCancel').addEventListener('click', () => $('settingsPanel').classList.remove('open'));
+$('settingsSave').addEventListener('click', async () => {
+  const tok = $('ghTokenInput').value.trim();
+  if (!tok) { showToast('请输入 Token', true); return; }
+  setToken(tok);
+  $('settingsPanel').classList.remove('open');
+  updateSyncStatus('syncing', '同步中...');
+  const remote = await syncFromGitHub();
+  if (remote && remote.logs) {
+    saveLogsLocal(remote.logs);
+    renderAll();
+    showToast('同步成功');
+  } else {
+    // 首次配置，推本地上传
+    syncToGitHub(getLogs());
+    showToast('Token 已保存');
+  }
+});
+
 // ============ 初始化 ============
 function initFilterDates() {
   const today = getTodayStr();
@@ -785,11 +895,27 @@ function initFilterDates() {
   els.filterEndDate.value = weekRange.end;
 }
 
-function startApp() {
+async function startApp() {
   hideLogin();
   const user = getCurrentUser();
   const tag = $('currentUserTag');
   if (tag) tag.textContent = user || '—';
+
+  // 尝试从 GitHub 同步
+  if (getToken()) {
+    const remote = await syncFromGitHub();
+    if (remote && remote.logs) {
+      const localKey = getStorageKey();
+      const local = localStorage.getItem(localKey);
+      if (!local || remote.logs.length >= JSON.parse(local).length) {
+        // 远程数据更新或本地为空，用远程覆盖本地
+        saveLogsLocal(remote.logs);
+      }
+    }
+  } else {
+    updateSyncStatusNoToken();
+  }
+
   initFilterDates();
   renderAll();
   renderTopBarDate();

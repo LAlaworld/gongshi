@@ -32,7 +32,7 @@
 
   <header>
     <h1>工时记录</h1>
-    <p>当前：<span class="current-user-tag" id="currentUserTag">—</span> <span class="switch-account-link" id="switchAccountLink">切换账号</span></p>
+    <p>当前：<span class="current-user-tag" id="currentUserTag">—</span> <span class="switch-account-link" id="switchAccountLink">切换账号</span> <span class="switch-account-link" id="settingsLink">⚙️ 设置</span></p>
   </header>
 
   <div class="stats-grid">
@@ -160,6 +160,17 @@
     <button class="login-btn" id="loginBtn">进入</button>
     <p class="login-error" id="loginError"></p>
   </div>
+</div>
+
+<div class="settings-panel" id="settingsPanel">
+  <div class="mini-modal-title">GitHub 同步设置</div>
+  <p class="settings-desc">需要 GitHub Token 才能自动同步数据。<a href="https://github.com/settings/tokens/new?scopes=repo&description=gongshi-sync" target="_blank">点击创建 Token</a>，勾选 repo 权限，生成后粘贴到下方。</p>
+  <input class="mini-modal-input" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+  <div class="mini-modal-actions">
+    <button class="btn btn-secondary" id="settingsCancel">取消</button>
+    <button class="btn btn-primary" id="settingsSave">保存并同步</button>
+  </div>
+  <div class="sync-status" id="syncStatus"><span class="sync-dot" id="syncDot"></span><span id="syncText">未配置同步</span></div>
 </div>
 
 <script src="app.js"></script>
