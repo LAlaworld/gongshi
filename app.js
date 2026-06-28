@@ -86,12 +86,11 @@ async function syncToGitHub(logs) {
   if (!GH_TOKEN) return;
   const url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + getDataFileName();
   try {
-    // 先 GET 获取 sha（如果文件已存在）
     let sha = null;
     try {
       const getRes = await fetch(url, { headers: { Authorization: 'token ' + GH_TOKEN } });
       if (getRes.ok) { const d = await getRes.json(); sha = d.sha; }
-    } catch(e) { /* GET 失败可能因为文件不存在，继续 PUT */ }
+    } catch(e) {}
 
     const bodyObj = { message: 'update', content: toBase64(JSON.stringify(logs)) };
     if (sha) bodyObj.sha = sha;
@@ -104,7 +103,7 @@ async function syncToGitHub(logs) {
     const err = await putRes.json().catch(() => ({}));
     showToast('失败: ' + (err.message || putRes.status), true);
   } catch(e) {
-    showToast('api.github.com 不通', true);
+    showToast('失败: ' + (e.message || e), true);
   }
 }
 
