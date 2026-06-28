@@ -918,9 +918,9 @@ $('switchAccountLink').addEventListener('click', () => { clearCurrentUser(); sho
 // ============ 初始化 ============
 function initFilterDates() {
   const today = getTodayStr();
-  const weekRange = getWeekRange(today);
-  els.filterStartDate.value = weekRange.start;
-  els.filterEndDate.value = weekRange.end;
+  const monthRange = getMonthRange(today);
+  els.filterStartDate.value = monthRange.start;
+  els.filterEndDate.value = today;
 }
 
 async function startApp() {
