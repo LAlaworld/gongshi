@@ -246,6 +246,8 @@
     background: rgba(255,255,255,0.65);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
     border: 1px solid rgba(255,255,255,0.5);
     border-radius: var(--radius-card);
     padding: 20px 16px;
@@ -302,6 +304,8 @@
     background: rgba(255,255,255,0.55);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
     border: 1px solid rgba(255,255,255,0.5);
     border-radius: var(--radius-card);
     padding: 16px 20px;
@@ -415,6 +419,8 @@
     background: rgba(255,255,255,0.5);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
     color: var(--stone-600);
     font-size: 13px;
     font-weight: 500;
@@ -463,11 +469,15 @@
   }
 
   .log-card {
-    background: #fffcf4;
-    border: 1px solid rgba(0,0,0,0.06);
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border: 1px solid rgba(255,255,255,0.55);
     border-radius: var(--radius-log);
     padding: 16px 18px;
-    box-shadow: 0 1px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5);
     display: flex;
     align-items: center;
     gap: 14px;
@@ -487,7 +497,7 @@
   }
 
   .log-card.swiped { transform: translateX(-80px); }
-  .log-card:active { background: #fffdf9; }
+  .log-card:active { background: rgba(255,255,255,0.75); }
 
   .log-date-info {
     min-width: 72px;
@@ -546,6 +556,9 @@
     padding: 60px 20px;
     background: rgba(255,255,255,0.5);
     backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
     border: 1px solid rgba(255,255,255,0.5);
     border-radius: var(--radius-card);
     box-shadow: 0 1px 12px rgba(0,0,0,0.03);
@@ -910,21 +923,7 @@
     .filter-total { width: 100%; margin-left:0; justify-content:center; margin-top:4px; padding:8px 14px; }
 
     .log-date-info { min-width: 60px; padding-right: 10px; }
-    .log-card {
-      padding: 14px; gap: 10px;
-      background: #fffdf7;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      border: 1px solid rgba(0,0,0,0.06);
-    }
-    .log-card:active { background: #fff; }
-    .export-btn {
-      background: rgba(120,113,108,0.08);
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      border: none;
-    }
-    .export-btn:hover { background: rgba(120,113,108,0.14); }
+    .log-card { padding: 14px; gap: 10px; }
     .log-duration-badge { padding: 4px 10px; font-size: 12px; }
 
     .add-btn { bottom: calc(24px + var(--safe-bottom)); right:16px; width:52px; height:52px; }
