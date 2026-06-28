@@ -138,6 +138,75 @@
     gap: 18px;
   }
 
+  /* ---- 登录页 ---- */
+  .login-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, var(--amber-50) 0%, #fff7ed 50%, #ffedd5 100%);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 400;
+    padding: 20px;
+  }
+  .login-overlay.hidden { display: none; }
+  .login-card {
+    text-align: center;
+    background: white;
+    border-radius: 24px;
+    padding: 40px 32px;
+    box-shadow: var(--shadow-card);
+    width: 100%;
+    max-width: 340px;
+  }
+  .login-icon {
+    width: 64px; height: 64px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: var(--amber-100);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .login-icon svg { width: 32px; height: 32px; stroke: var(--amber-600); }
+  .login-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px; color: var(--stone-900);
+    font-weight: 400; margin-bottom: 4px;
+  }
+  .login-desc { font-size: 14px; color: var(--stone-500); margin-bottom: 24px; }
+  .login-input {
+    width: 100%; padding: 14px 16px;
+    border: 1.5px solid var(--stone-200); border-radius: var(--radius-input);
+    font-size: 16px; color: var(--stone-700); background: var(--stone-50);
+    text-align: center; font-family: 'Inter', sans-serif;
+    margin-bottom: 16px; min-height: 48px;
+    transition: all 0.2s;
+    -webkit-user-select: text; user-select: text;
+  }
+  .login-input:focus { outline: none; border-color: var(--amber-500); box-shadow: 0 0 0 3px rgba(245,158,11,0.15); background: white; }
+  .login-input.error { border-color: var(--red-500); box-shadow: 0 0 0 3px rgba(239,68,68,0.15); animation: shake 0.5s ease; }
+  .login-btn {
+    width: 100%; padding: 14px;
+    border-radius: 14px; border: none;
+    background: linear-gradient(135deg, var(--amber-400), var(--amber-500));
+    color: white; font-size: 16px; font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer; min-height: 50px;
+    box-shadow: var(--shadow-amber);
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .login-btn:active { transform: scale(0.96); }
+  .login-error { font-size: 12px; color: var(--red-500); margin-top: 10px; min-height: 18px; }
+
+  /* 切换账号链接 */
+  .current-user-tag {
+    font-weight: 700; color: var(--amber-600);
+  }
+  .switch-account-link {
+    display: inline-block; margin-left: 8px;
+    font-size: 12px; font-weight: 500; color: var(--stone-400);
+    cursor: pointer; transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .switch-account-link:hover { color: var(--amber-600); }
+
   .weather-item {
     display: flex;
     flex-direction: column;
@@ -318,6 +387,10 @@
     font-weight: 400;
   }
 
+  .tool-btns {
+    display: flex;
+    gap: 6px;
+  }
   .export-btn {
     display: flex;
     align-items: center;
@@ -641,6 +714,70 @@
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.error { background: #dc2626; }
 
+  /* ---- 设置面板 ---- */
+  .settings-btn {
+    position: fixed;
+    top: calc(16px + var(--safe-top));
+    right: calc(16px + var(--safe-bottom));
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 1.5px solid var(--stone-200);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    z-index: 101;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: var(--shadow-log);
+  }
+  .settings-btn:active { transform: scale(0.9); background: var(--stone-50); }
+
+  .settings-panel {
+    position: fixed;
+    top: calc(64px + var(--safe-top));
+    right: calc(16px + var(--safe-bottom));
+    background: white;
+    border-radius: var(--radius-log);
+    padding: 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    z-index: 150;
+    width: 280px;
+    display: none;
+    border: 1.5px solid var(--stone-200);
+  }
+  .settings-panel.open { display: block; }
+
+  .settings-title {
+    font-weight: 600; font-size: 15px; color: var(--stone-800); margin-bottom: 12px;
+  }
+  .settings-desc {
+    font-size: 12px; color: var(--stone-500); line-height: 1.6; margin-bottom: 10px;
+  }
+  .settings-desc a { color: var(--amber-600); }
+  .settings-input {
+    width: 100%; padding: 10px 12px;
+    border: 1.5px solid var(--stone-200); border-radius: 8px;
+    font-size: 13px; font-family: monospace; color: var(--stone-700);
+    margin-bottom: 10px; min-height: 40px;
+    -webkit-user-select: text; user-select: text;
+  }
+  .settings-actions { display: flex; gap: 8px; }
+  .settings-actions .btn { min-height: 36px; padding: 8px 16px; font-size: 13px; border-radius: 10px; }
+  .sync-status {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--stone-500); margin-top: 8px;
+  }
+  .sync-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--stone-300);
+  }
+  .sync-dot.synced { background: #22c55e; }
+  .sync-dot.syncing { background: var(--amber-400); animation: pulse 1s infinite; }
+  .sync-dot.error { background: var(--red-500); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
   /* ---- 动画 ---- */
   @keyframes fadeInUp {
     from { opacity:0; transform:translateY(12px); }
@@ -754,7 +891,7 @@
 
   <header>
     <h1>工时记录</h1>
-    <p>记录每一天的付出，看见时间的价值</p>
+    <p>当前：<span class="current-user-tag" id="currentUserTag">—</span> <span class="switch-account-link" id="switchAccountLink">切换账号</span></p>
   </header>
 
   <div class="stats-grid">
@@ -786,18 +923,20 @@
 
   <div class="section-header">
     <h2 class="section-title">工时明细</h2>
-    <button class="export-btn" id="exportBtn" title="导出 CSV">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-      导出
-    </button>
-    <button class="export-btn" id="importBtn" title="导入 CSV">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-      </svg>
-      导入
-    </button>
+    <div class="tool-btns">
+      <button class="export-btn" id="exportBtn" title="导出 CSV">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        导出
+      </button>
+      <button class="export-btn" id="importBtn" title="导入 CSV">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        导入
+      </button>
+    </div>
     <input type="file" id="importFile" accept=".csv" style="display:none">
   </div>
 
@@ -867,6 +1006,21 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <h2 class="login-title">工时记录</h2>
+    <p class="login-desc">请输入你的账号</p>
+    <input class="login-input" id="loginInput" placeholder="输入账号名" maxlength="20" autocomplete="off">
+    <button class="login-btn" id="loginBtn">进入</button>
+    <p class="login-error" id="loginError"></p>
+  </div>
+</div>
+
 <script>
 // ============ DOM 缓存 ============
 const $ = (id) => document.getElementById(id);
@@ -895,20 +1049,39 @@ const els = {
   get toast() { return $('toast'); },
   get topBarDate() { return $('topBarDate'); },
   get topBarLunar() { return $('topBarLunar'); },
-  get topBarWeather() { return $('topBarWeather'); }
+  get topBarWeather() { return $('topBarWeather'); },
+  get loginOverlay() { return $('loginOverlay'); },
+  get loginInput() { return $('loginInput'); },
+  get loginError() { return $('loginError'); }
 };
 
-// ============ 常量 ============
-const STORAGE_KEY = 'work_logs_data';
+// ============ 本地账号系统 ============
+const CURRENT_USER_KEY = 'current_user';
+const DATA_PREFIX = 'work_logs_data_';
+const VALID_ACCOUNTS = ['sym', 'ld'];
 
-// ============ localStorage ============
+function getCurrentUser() {
+  return localStorage.getItem(CURRENT_USER_KEY);
+}
+
+function setCurrentUser(user) { localStorage.setItem(CURRENT_USER_KEY, user); }
+
+function clearCurrentUser() { localStorage.removeItem(CURRENT_USER_KEY); }
+
+function getStorageKey() { return DATA_PREFIX + getCurrentUser(); }
+
+// ============ 数据层（按账号隔离）============
 function getLogs() {
-  try { const d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : []; }
-  catch(e) { return []; }
+  try {
+    const key = getStorageKey();
+    if (!key) return [];
+    const d = localStorage.getItem(key);
+    return d ? JSON.parse(d) : [];
+  } catch(e) { return []; }
 }
 
 function saveLogs(logs) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); }
+  try { localStorage.setItem(getStorageKey(), JSON.stringify(logs)); }
   catch(e) { showToast('保存失败，存储空间不足', true); }
 }
 
@@ -1594,6 +1767,37 @@ function renderTopBarDate() {
   if (els.topBarLunar) els.topBarLunar.textContent = lunarText;
 }
 
+// ============ 登录 ============
+function tryLogin() {
+  const name = els.loginInput.value.trim();
+  if (!name) { showLoginError('请输入账号'); return; }
+  if (!VALID_ACCOUNTS.includes(name)) { showLoginError('账号不存在，仅限 sym 或 ld'); return; }
+  setCurrentUser(name);
+  els.loginOverlay.classList.add('hidden');
+  startApp();
+}
+
+function showLoginError(msg) {
+  const err = els.loginError;
+  err.textContent = msg;
+  els.loginInput.classList.add('error');
+  setTimeout(() => els.loginInput.classList.remove('error'), 500);
+}
+
+function showLogin() {
+  const tag = $('currentUserTag');
+  if (tag) tag.textContent = '—';
+  els.loginOverlay.classList.remove('hidden');
+  els.loginInput.value = '';
+  els.loginError.textContent = '';
+  setTimeout(() => els.loginInput.focus(), 300);
+}
+
+// 事件
+$('loginBtn').addEventListener('click', tryLogin);
+$('loginInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
+$('switchAccountLink').addEventListener('click', () => { clearCurrentUser(); showLogin(); });
+
 // ============ 初始化 ============
 function initFilterDates() {
   const today = getTodayStr();
@@ -1602,10 +1806,27 @@ function initFilterDates() {
   els.filterEndDate.value = weekRange.end;
 }
 
-initFilterDates();
-renderAll();
-renderTopBarDate();
-fetchWeather();
+function startApp() {
+  const user = getCurrentUser();
+  const tag = $('currentUserTag');
+  if (tag) tag.textContent = user || '—';
+  initFilterDates();
+  renderAll();
+  renderTopBarDate();
+  fetchWeather();
+}
+
+(function init() {
+  const user = getCurrentUser();
+  if (user && VALID_ACCOUNTS.includes(user)) {
+    // 已登录，直接启动
+    startApp();
+  } else {
+    // 未登录或无效账号，显示登录页
+    clearCurrentUser();
+    showLogin();
+  }
+})();
 </script>
 </body>
 </html>
