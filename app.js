@@ -807,4 +807,3 @@ function startApp() {
     showLogin();
   }
 })();
-</script>
