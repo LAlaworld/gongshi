@@ -376,7 +376,7 @@
     margin-left: auto;
     display: flex;
     align-items: baseline;
-    gap: 4px;
+    gap: 8px;
     flex-shrink: 0;
     white-space: nowrap;
     background: rgba(245,158,11,0.1);
@@ -384,16 +384,17 @@
     padding: 8px 16px;
   }
 
-  .filter-total-label { font-size: 12px; color: var(--stone-500); font-weight: 500; }
+  .filter-total-label { font-size: 13px; color: var(--stone-500); font-weight: 500; }
 
   .filter-total-value {
     font-family: Georgia, 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'Songti SC', 'KaiTi', serif;
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 400;
     color: var(--amber-700);
+    line-height: 1;
   }
 
-  .filter-total-unit { font-size: 11px; color: var(--stone-500); font-weight: 500; }
+  .filter-total-unit { font-size: 13px; color: var(--stone-500); font-weight: 500; }
 
   /* ---- 明细列表 ---- */
   .section-header {
