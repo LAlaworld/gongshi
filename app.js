@@ -146,12 +146,13 @@ function scheduleSync(logs) {
 }
 
 // ============ 数据层（按账号隔离）============
-function getLogs() {
+function getLogs(includeDeleted) {
   try {
     const key = getStorageKey();
     if (!key) return [];
     const d = localStorage.getItem(key);
-    return d ? JSON.parse(d) : [];
+    const logs = d ? JSON.parse(d) : [];
+    return includeDeleted ? logs : logs.filter(l => !l.deleted);
   } catch(e) { return []; }
 }
 
@@ -442,8 +443,11 @@ function deleteLog(id) {
   wrapper.style.opacity = '0';
 
   setTimeout(() => {
-    let logs = getLogs();
-    logs = logs.filter((log) => log.id !== id);
+    let logs = getLogs(true);  // 包含已删除的
+    const idx = logs.findIndex(l => l.id === id);
+    if (idx !== -1) {
+      logs[idx] = { ...logs[idx], deleted: true, updatedAt: Date.now() };
+    }
     saveLogs(logs);
     renderAll();
     showToast('已删除');
@@ -507,25 +511,27 @@ function handleSubmit(e) {
     return;
   }
 
-  let logs = getLogs();
+  let logs = getLogs(true);  // 包含已删除的，避免 id 冲突
 
   if (editId) {
     // 更新已有记录
     logs = logs.map((log) => {
       if (log.id === editId) {
-        return { ...log, date, duration: hours, shift: shift || undefined, notes: notes || undefined };
+        return { ...log, date, duration: hours, shift: shift || undefined, notes: notes || undefined, updatedAt: Date.now() };
       }
       return log;
     });
   } else {
     // 新增记录
+    const now = Date.now();
     logs.push({
       id: generateId(),
       date,
       duration: hours,
       shift: shift || undefined,
       notes: notes || undefined,
-      createdAt: Date.now()
+      createdAt: now,
+      updatedAt: now
     });
   }
 
@@ -591,7 +597,7 @@ function importCSV(file) {
 
     let imported = 0;
     let skipped = 0;
-    const logs = getLogs();
+    const logs = getLogs(true);  // 包含已删除的
 
     for (let i = 1; i < lines.length; i++) {
       // 简单 CSV 解析：按逗号分割，处理引号内的逗号
@@ -611,13 +617,15 @@ function importCSV(file) {
 
       if (!date || isNaN(duration) || duration <= 0) { skipped++; continue; }
 
+      const now = Date.now();
       logs.push({
         id: generateId(),
         date,
         duration,
         shift: shift || undefined,
         notes: notes || undefined,
-        createdAt: Date.now()
+        createdAt: now,
+        updatedAt: now
       });
       imported++;
     }
@@ -903,10 +911,10 @@ async function startApp() {
   // 从 GitHub 拉取最新数据，与本地合并（按 id 去重，远程优先）
   const remote = await syncFromGitHub();
   if (remote && remote.logs) {
-    const localLogs = getLogs();
+    const localLogs = getLogs(true);  // 包含已删除的
     const merged = new Map();
     localLogs.forEach(l => merged.set(l.id, l));
-    remote.logs.forEach(l => merged.set(l.id, l));  // 远程覆盖同 id
+    remote.logs.forEach(l => merged.set(l.id, l));  // 远程覆盖同 id（含删除标记）
     saveLogsLocal([...merged.values()]);
   }
 
