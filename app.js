@@ -866,12 +866,7 @@ async function startApp() {
   // 从 GitHub 拉取最新数据，与本地合并
   const remote = await syncFromGitHub();
   if (remote && remote.logs) {
-    const localLogs = getLogs();
-    const remoteIds = new Set(remote.logs.map(l => l.id));
-    const merged = [...remote.logs];
-    localLogs.forEach(l => { if (!remoteIds.has(l.id)) merged.push(l); });
-    merged.sort((a, b) => b.createdAt - a.createdAt);
-    saveLogsLocal(merged);
+    saveLogsLocal(remote.logs);
   }
 
   initFilterDates();
