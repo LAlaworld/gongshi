@@ -80,7 +80,9 @@ async function syncToGitHub(logs) {
     }
 
     const content = btoa(JSON.stringify(logs));
-    const body = JSON.stringify({ message: 'update ' + getDataFileName(), content: content, sha: sha });
+    const bodyObj = { message: 'update ' + getDataFileName(), content: content };
+    if (sha) bodyObj.sha = sha;
+    const body = JSON.stringify(bodyObj);
     await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${getDataFileName()}`, {
       method: 'PUT',
       headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
