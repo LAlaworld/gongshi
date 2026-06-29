@@ -598,6 +598,8 @@ function importCSV(file) {
 
     let imported = 0;
     let skipped = 0;
+    let minDate = null;
+    let maxDate = null;
     const logs = getLogs(true);  // 包含已删除的
 
     for (let i = 1; i < lines.length; i++) {
@@ -618,6 +620,9 @@ function importCSV(file) {
 
       if (!date || isNaN(duration) || duration <= 0) { skipped++; continue; }
 
+      if (!minDate || date < minDate) minDate = date;
+      if (!maxDate || date > maxDate) maxDate = date;
+
       const now = Date.now();
       logs.push({
         id: generateId(),
@@ -637,10 +642,19 @@ function importCSV(file) {
     }
 
     saveLogs(logs);
+
+    // 扩宽筛选范围以包含导入的数据
+    if (minDate && maxDate) {
+      const curStart = els.filterStartDate.value;
+      const curEnd = els.filterEndDate.value;
+      const newStart = (!curStart || minDate < curStart) ? minDate : curStart;
+      const newEnd = (!curEnd || maxDate > curEnd) ? maxDate : curEnd;
+      els.filterStartDate.value = newStart;
+      els.filterEndDate.value = newEnd;
+    }
+
     renderAll();
     showToast(`导入 ${imported} 条记录` + (skipped > 0 ? `，跳过 ${skipped} 条无效行` : ''));
-    // 扩宽筛选范围
-    initFilterDates();
   };
   reader.readAsText(file, 'UTF-8');
 }
