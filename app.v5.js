@@ -348,7 +348,7 @@ function renderLogList() {
     groups[monthKey].push(log);
   });
 
-  const monthKeys = Object.keys(groups).sort((a, b) => a.localeCompare(b));
+  const monthKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
 
   let html = '';
   monthKeys.forEach((monthKey) => {
@@ -872,16 +872,20 @@ function getSolarTerm(y, m, d) {
 
 // ---- 天气 ----
 function weatherEmoji(code) {
-  if (code >= 200 && code < 300) return '⛈️';
-  if (code >= 300 && code < 400) return '🌦️';
-  if (code >= 500 && code < 600) return '🌧️';
-  if (code >= 600 && code < 700) return '🌨️';
-  if (code >= 700 && code < 800) return '🌫️';
-  if (code === 800) return '☀️';
-  if (code === 801) return '🌤️';
-  if (code === 802) return '⛅';
-  if (code >= 803) return '☁️';
-  return '🌤️';
+  if (code >= 200 && code < 300) return '⛈️ 雷暴';
+  if (code >= 300 && code < 400) return '🌦️ 小雨';
+  if (code >= 500 && code < 503) return '🌧️ 小雨';
+  if (code >= 503 && code < 600) return '🌧️ 大雨';
+  if (code >= 600 && code < 603) return '🌨️ 小雪';
+  if (code >= 603 && code < 700) return '🌨️ 大雪';
+  if (code >= 700 && code < 750) return '🌫️ 雾';
+  if (code >= 751 && code < 770) return '💨 风';
+  if (code === 781) return '🌪️ 龙卷风';
+  if (code === 800) return '☀️ 晴';
+  if (code === 801) return '🌤️ 多云';
+  if (code === 802) return '⛅ 阴';
+  if (code >= 803) return '☁️ 阴天';
+  return '🌤️ 多云';
 }
 
 function mostFrequentCode(hourly) {

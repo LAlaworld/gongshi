@@ -348,7 +348,7 @@ function renderLogList() {
     groups[monthKey].push(log);
   });
 
-  const monthKeys = Object.keys(groups).sort((a, b) => a.localeCompare(b));
+  const monthKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
 
   let html = '';
   monthKeys.forEach((monthKey) => {
@@ -875,33 +875,42 @@ function weatherEmoji(code) {
   const icon = (file) =>
     `<img src="weather-icons/${file}.svg" width="20" height="20" alt="" style="vertical-align:-3px;">`;
 
-  // 雷暴 200-299
-  if (code >= 200 && code < 300) return icon('thunderstorm');
-  // 毛毛雨/冻雨 300-399
-  if (code >= 300 && code < 400) return icon('light-rain');
-  // 小-中雨 500-502
-  if (code >= 500 && code < 503) return icon('light-rain');
-  // 大雨/暴雨 503+
-  if (code >= 503 && code < 600) return icon('heavy-rain');
-  // 小-中雪 600-602
-  if (code >= 600 && code < 603) return icon('snow');
-  // 大雪 603+
-  if (code >= 603 && code < 700) return icon('heavy-snow');
-  // 雾/霾 700-741
-  if (code >= 700 && code < 750) return icon('fog');
-  // 风 751-762
-  if (code >= 751 && code < 770) return icon('wind');
-  // 龙卷风 781
-  if (code === 781) return icon('tornado');
-  // 晴天 800
-  if (code === 800) return icon('sunny');
-  // 少云 801
-  if (code === 801) return icon('partly-cloudy');
-  // 多云 802
-  if (code === 802) return icon('cloudy');
-  // 阴天 803+
-  if (code >= 803) return icon('overcast');
-  return icon('partly-cloudy');
+  const map = {
+    'thunderstorm': '雷暴',
+    'light-rain': '小雨',
+    'heavy-rain': '大雨',
+    'snow': '小雪',
+    'heavy-snow': '大雪',
+    'fog': '雾',
+    'wind': '风',
+    'tornado': '龙卷风',
+    'sunny': '晴',
+    'partly-cloudy': '多云',
+    'cloudy': '阴',
+    'overcast': '阴天',
+    'hail': '冰雹',
+    'sleet': '雨夹雪',
+    'clear-night': '晴夜',
+    'rainbow': '彩虹'
+  };
+
+  let file, label;
+  if (code >= 200 && code < 300) { file = 'thunderstorm'; label = map[file]; }
+  else if (code >= 300 && code < 400) { file = 'light-rain'; label = map[file]; }
+  else if (code >= 500 && code < 503) { file = 'light-rain'; label = map[file]; }
+  else if (code >= 503 && code < 600) { file = 'heavy-rain'; label = map[file]; }
+  else if (code >= 600 && code < 603) { file = 'snow'; label = map[file]; }
+  else if (code >= 603 && code < 700) { file = 'heavy-snow'; label = map[file]; }
+  else if (code >= 700 && code < 750) { file = 'fog'; label = map[file]; }
+  else if (code >= 751 && code < 770) { file = 'wind'; label = map[file]; }
+  else if (code === 781) { file = 'tornado'; label = map[file]; }
+  else if (code === 800) { file = 'sunny'; label = map[file]; }
+  else if (code === 801) { file = 'partly-cloudy'; label = map[file]; }
+  else if (code === 802) { file = 'cloudy'; label = map[file]; }
+  else if (code >= 803) { file = 'overcast'; label = map[file]; }
+  else { file = 'partly-cloudy'; label = map[file]; }
+
+  return `${icon(file)} <span style="font-size:11px;color:var(--stone-500);">${label}</span>`;
 }
 
 function mostFrequentCode(hourly) {
