@@ -241,7 +241,11 @@ function calculateTotalInRange(logs, start, end) {
 }
 
 // ============ 工时分析弹窗 ============
+let chartMode = 'month'; // 'month' | 'year'
+
 function openAnalysisModal() {
+  chartMode = 'month';
+  updateChartModeUI();
   const body = document.body;
   body.classList.add('modal-open');
   $('analysisModalOverlay').classList.add('active');
@@ -253,6 +257,19 @@ function closeAnalysisModal() {
   setTimeout(() => document.body.classList.remove('modal-open'), 350);
 }
 
+function switchChartMode(mode) {
+  if (chartMode === mode) return;
+  chartMode = mode;
+  updateChartModeUI();
+  renderChart();
+}
+
+function updateChartModeUI() {
+  const btns = $('chartModeSwitch').querySelectorAll('.chart-mode-btn');
+  btns.forEach(b => b.classList.toggle('active', b.dataset.mode === chartMode));
+  $('analysisSubtitle').textContent = chartMode === 'month' ? '当月每日工时' : '当年每月工时';
+}
+
 function renderChart() {
   const logs = getLogs();
   if (logs.length === 0) {
@@ -260,34 +277,71 @@ function renderChart() {
     return;
   }
 
-  // 按月汇总（最近 12 个月）
-  const monthly = {};
-  logs.forEach(l => {
-    const m = l.date.slice(0, 7);
-    monthly[m] = (monthly[m] || 0) + l.duration;
-  });
+  const now = new Date();
+  let buckets = []; // { label, value }
+  let subtitle = '';
 
-  const months = Object.keys(monthly).sort();
-  const recentMonths = months.slice(-12);
-  const values = recentMonths.map(m => monthly[m]);
+  if (chartMode === 'month') {
+    // 当月：按天拆分
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const prefix = `${year}-${String(month).padStart(2, '0')}`;
+    const daysInMonth = new Date(year, month, 0).getDate();
 
-  if (recentMonths.length === 0) {
-    $('chartSummary').innerHTML = '<div class="chart-summary-item">暂无工时数据</div>';
+    const daily = {};
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = prefix + '-' + String(d).padStart(2, '0');
+      daily[key] = 0;
+    }
+    logs.forEach(l => {
+      if (l.date in daily) daily[l.date] += l.duration;
+    });
+
+    buckets = Object.entries(daily).map(([date, val]) => ({
+      label: parseInt(date.slice(8)) + '日',
+      value: val
+    }));
+  } else {
+    // 当年：按月拆分
+    const year = now.getFullYear();
+    const prefix = year + '-';
+    const monthly = {};
+    for (let m = 1; m <= 12; m++) {
+      monthly[prefix + String(m).padStart(2, '0')] = 0;
+    }
+    logs.forEach(l => {
+      const key = l.date.slice(0, 7);
+      if (key in monthly) monthly[key] += l.duration;
+    });
+
+    buckets = Object.entries(monthly).map(([key, val]) => ({
+      label: parseInt(key.slice(5)) + '月',
+      value: val
+    }));
+  }
+
+  const values = buckets.map(b => b.value);
+  const allZero = values.every(v => v === 0);
+
+  if (allZero) {
+    const scope = chartMode === 'month' ? '本月暂无工时数据' : '本年暂无工时数据';
+    $('chartSummary').innerHTML = '<div class="chart-summary-item">' + scope + '</div>';
     return;
   }
 
   // 分析指标
   const total = values.reduce((a, b) => a + b, 0);
-  const avg = total / recentMonths.length;
+  const hasDataCount = values.filter(v => v > 0).length;
+  const avg = hasDataCount > 0 ? total / hasDataCount : 0;
   const maxVal = Math.max(...values);
-  const maxMonth = recentMonths[values.indexOf(maxVal)];
-  const daysWorked = logs.length;
+  const maxIdx = values.indexOf(maxVal);
+  const maxLabel = buckets[maxIdx].label;
 
-  const maxLabel = maxMonth.split('-');
+  const unitLabel = chartMode === 'month' ? '天' : '月';
   const summaryHTML = [
-    '<div class="chart-summary-item">月均 <strong>' + avg.toFixed(1) + 'h</strong></div>',
-    '<div class="chart-summary-item">峰值 ' + maxLabel[0] + '年' + parseInt(maxLabel[1]) + '月 <strong>' + maxVal.toFixed(1) + 'h</strong></div>',
-    '<div class="chart-summary-item">累计 <strong>' + daysWorked + '</strong> 条记录</div>',
+    '<div class="chart-summary-item">日均 <strong>' + avg.toFixed(1) + 'h</strong></div>',
+    '<div class="chart-summary-item">最高 ' + maxLabel + ' <strong>' + maxVal.toFixed(1) + 'h</strong></div>',
+    '<div class="chart-summary-item">有记录 <strong>' + hasDataCount + '</strong> ' + unitLabel + '</div>',
     '<div class="chart-summary-item">合计 <strong>' + total.toFixed(1) + 'h</strong></div>',
   ].join('');
   $('chartSummary').innerHTML = summaryHTML;
@@ -310,17 +364,17 @@ function renderChart() {
   const pad = { top: 20, right: 20, bottom: 40, left: 40 };
   const chartW = W - pad.left - pad.right;
   const chartH = H - pad.top - pad.bottom;
-  const barCount = recentMonths.length;
-  const barGap = Math.max(6, Math.min(20, chartW / barCount * 0.35));
+  const barCount = buckets.length;
+  const barGap = Math.max(2, Math.min(8, chartW / barCount * 0.2));
   const barW = (chartW - barGap * (barCount - 1)) / barCount;
 
   // 清空
   ctx.clearRect(0, 0, W, H);
 
-  // Y 轴刻度与网格线
-  const yMax = Math.ceil(maxVal / 20) * 20;
+  // Y 轴
+  const yMax = Math.max(1, Math.ceil(maxVal / 10) * 10);
   const ySteps = 4;
-  const yStepVal = Math.ceil(yMax / ySteps / 10) * 10 || 10;
+  const yStepVal = Math.ceil(yMax / ySteps / 5) * 5 || 5;
   const actualYMax = yStepVal * ySteps;
 
   ctx.textAlign = 'right';
@@ -342,6 +396,7 @@ function renderChart() {
   // 柱子
   for (let i = 0; i < barCount; i++) {
     const val = values[i];
+    if (val === 0) continue;
     const barH = (val / actualYMax) * chartH;
     const x = pad.left + i * (barW + barGap);
     const y = pad.top + chartH - barH;
@@ -351,8 +406,7 @@ function renderChart() {
     grad.addColorStop(1, '#fcd34d');
     ctx.fillStyle = grad;
 
-    // 圆角柱子
-    const r = Math.min(6, barW / 2);
+    const r = Math.min(3, barW / 2);
     ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.lineTo(x + barW - r, y);
@@ -364,32 +418,39 @@ function renderChart() {
     ctx.closePath();
     ctx.fill();
 
-    // 数值标签
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.font = 'bold 11px -apple-system, "PingFang SC", sans-serif';
-    ctx.fillStyle = '#92400e';
-    ctx.fillText(val.toFixed(1) + 'h', x + barW / 2, y - 4);
+    // 数值标签（仅 barW > 20 时显示）
+    if (barW > 20) {
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.font = 'bold 10px -apple-system, "PingFang SC", sans-serif';
+      ctx.fillStyle = '#92400e';
+      ctx.fillText(val.toFixed(1) + 'h', x + barW / 2, y - 3);
+    }
   }
 
   // X 轴标签
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
-  ctx.font = '11px -apple-system, "PingFang SC", sans-serif';
+  ctx.font = '10px -apple-system, "PingFang SC", sans-serif';
   ctx.fillStyle = '#a8a29e';
-  for (let i = 0; i < barCount; i++) {
-    const m = recentMonths[i].split('-');
-    const label = parseInt(m[1]) + '月';
-    const x = pad.left + i * (barW + barGap) + barW / 2;
-    ctx.fillText(label, x, pad.top + chartH + 8);
 
-    // 年份标在每年一月下方
-    if (parseInt(m[1]) === 1 || i === 0) {
-      ctx.fillStyle = '#57534e';
-      ctx.font = 'bold 10px -apple-system, "PingFang SC", sans-serif';
-      ctx.fillText(m[0], x, pad.top + chartH + 22);
-      ctx.font = '11px -apple-system, "PingFang SC", sans-serif';
-      ctx.fillStyle = '#a8a29e';
+  // 当月模式：标几个关键日期（1号、10号、20号、最后），避免太密
+  if (chartMode === 'month') {
+    const keyIndices = [0]; // 1号
+    if (barCount > 10) keyIndices.push(9);  // 10号
+    if (barCount > 20) keyIndices.push(19); // 20号
+    keyIndices.push(barCount - 1); // 最后一天
+
+    for (let i = 0; i < barCount; i++) {
+      if (!keyIndices.includes(i)) continue;
+      const x = pad.left + i * (barW + barGap) + barW / 2;
+      ctx.fillText(buckets[i].label, x, pad.top + chartH + 8);
+    }
+  } else {
+    // 当年模式：每个月都标
+    for (let i = 0; i < barCount; i++) {
+      const x = pad.left + i * (barW + barGap) + barW / 2;
+      ctx.fillText(buckets[i].label, x, pad.top + chartH + 8);
     }
   }
 }
@@ -910,6 +971,10 @@ $('importBtn').addEventListener('click', () => $('importFile').click());
 $('analysisBtn').addEventListener('click', openAnalysisModal);
 $('analysisModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeAnalysisModal(); });
 $('analysisCloseBtn').addEventListener('click', closeAnalysisModal);
+$('chartModeSwitch').addEventListener('click', (e) => {
+  const btn = e.target.closest('.chart-mode-btn');
+  if (btn) switchChartMode(btn.dataset.mode);
+});
 $('importFile').addEventListener('change', (e) => {
   if (e.target.files[0]) importCSV(e.target.files[0]);
   e.target.value = ''; // 允许重复选同一个文件
@@ -1106,7 +1171,7 @@ function fetchWeather() {
     return;
   }
 
-  fetch('http://ip-api.com/json/?lang=zh-CN')
+  fetch('https://ip-api.com/json/?lang=zh-CN')
     .then((r) => r.json())
     .then((loc) => {
       const lat = loc.lat || 39.9042;
