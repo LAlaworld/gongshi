@@ -240,6 +240,164 @@ function calculateTotalInRange(logs, start, end) {
     .reduce((sum, log) => sum + log.duration, 0);
 }
 
+// ============ 工时分析图表 ============
+let chartCollapsed = true;
+
+function toggleChart() {
+  chartCollapsed = !chartCollapsed;
+  const body = $('chartBody');
+  const arrow = $('chartArrow');
+  if (chartCollapsed) {
+    body.classList.add('hidden');
+    arrow.classList.remove('expanded');
+  } else {
+    body.classList.remove('hidden');
+    arrow.classList.add('expanded');
+    renderChart();
+  }
+}
+
+function renderChart() {
+  const logs = getLogs();
+  if (logs.length === 0) {
+    $('chartSummary').innerHTML = '<div class="chart-summary-item">暂无工时数据</div>';
+    return;
+  }
+
+  // 按月汇总（最近 12 个月）
+  const monthly = {};
+  logs.forEach(l => {
+    const m = l.date.slice(0, 7);
+    monthly[m] = (monthly[m] || 0) + l.duration;
+  });
+
+  const months = Object.keys(monthly).sort();
+  const recentMonths = months.slice(-12);
+  const values = recentMonths.map(m => monthly[m]);
+
+  if (recentMonths.length === 0) {
+    $('chartSummary').innerHTML = '<div class="chart-summary-item">暂无工时数据</div>';
+    return;
+  }
+
+  // 分析指标
+  const total = values.reduce((a, b) => a + b, 0);
+  const avg = total / recentMonths.length;
+  const maxVal = Math.max(...values);
+  const maxMonth = recentMonths[values.indexOf(maxVal)];
+  const daysWorked = logs.length;
+
+  const maxLabel = maxMonth.split('-');
+  const summaryHTML = [
+    '<div class="chart-summary-item">月均 <strong>' + avg.toFixed(1) + 'h</strong></div>',
+    '<div class="chart-summary-item">峰值 ' + maxLabel[0] + '年' + parseInt(maxLabel[1]) + '月 <strong>' + maxVal.toFixed(1) + 'h</strong></div>',
+    '<div class="chart-summary-item">累计 <strong>' + daysWorked + '</strong> 条记录</div>',
+    '<div class="chart-summary-item">合计 <strong>' + total.toFixed(1) + 'h</strong></div>',
+  ].join('');
+  $('chartSummary').innerHTML = summaryHTML;
+
+  // Canvas 柱状图
+  const canvas = $('workChart');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const W = Math.max(600, rect.width - 2);
+  const H = 300;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  // 布局
+  const pad = { top: 20, right: 20, bottom: 40, left: 40 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const barCount = recentMonths.length;
+  const barGap = Math.max(6, Math.min(20, chartW / barCount * 0.35));
+  const barW = (chartW - barGap * (barCount - 1)) / barCount;
+
+  // 清空
+  ctx.clearRect(0, 0, W, H);
+
+  // Y 轴刻度与网格线
+  const yMax = Math.ceil(maxVal / 20) * 20;
+  const ySteps = 4;
+  const yStepVal = Math.ceil(yMax / ySteps / 10) * 10 || 10;
+  const actualYMax = yStepVal * ySteps;
+
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  ctx.font = '11px -apple-system, "PingFang SC", sans-serif';
+  ctx.fillStyle = '#a8a29e';
+  for (let i = 0; i <= ySteps; i++) {
+    const val = i * yStepVal;
+    const y = pad.top + chartH - (val / actualYMax) * chartH;
+    ctx.fillText(val + 'h', pad.left - 8, y);
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(120,113,108,0.08)';
+    ctx.lineWidth = 1;
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(W - pad.right, y);
+    ctx.stroke();
+  }
+
+  // 柱子
+  for (let i = 0; i < barCount; i++) {
+    const val = values[i];
+    const barH = (val / actualYMax) * chartH;
+    const x = pad.left + i * (barW + barGap);
+    const y = pad.top + chartH - barH;
+
+    const grad = ctx.createLinearGradient(x, y, x, pad.top + chartH);
+    grad.addColorStop(0, '#f59e0b');
+    grad.addColorStop(1, '#fcd34d');
+    ctx.fillStyle = grad;
+
+    // 圆角柱子
+    const r = Math.min(6, barW / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + barW - r, y);
+    ctx.quadraticCurveTo(x + barW, y, x + barW, y + r);
+    ctx.lineTo(x + barW, pad.top + chartH);
+    ctx.lineTo(x, pad.top + chartH);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    ctx.fill();
+
+    // 数值标签
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.font = 'bold 11px -apple-system, "PingFang SC", sans-serif';
+    ctx.fillStyle = '#92400e';
+    ctx.fillText(val.toFixed(1) + 'h', x + barW / 2, y - 4);
+  }
+
+  // X 轴标签
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.font = '11px -apple-system, "PingFang SC", sans-serif';
+  ctx.fillStyle = '#a8a29e';
+  for (let i = 0; i < barCount; i++) {
+    const m = recentMonths[i].split('-');
+    const label = parseInt(m[1]) + '月';
+    const x = pad.left + i * (barW + barGap) + barW / 2;
+    ctx.fillText(label, x, pad.top + chartH + 8);
+
+    // 年份标在每年一月下方
+    if (parseInt(m[1]) === 1 || i === 0) {
+      ctx.fillStyle = '#57534e';
+      ctx.font = 'bold 10px -apple-system, "PingFang SC", sans-serif';
+      ctx.fillText(m[0], x, pad.top + chartH + 22);
+      ctx.font = '11px -apple-system, "PingFang SC", sans-serif';
+      ctx.fillStyle = '#a8a29e';
+    }
+  }
+}
+
 // ============ 动画 ============
 function animateNumber(element, target, duration = 800) {
   if (target === 0 && parseFloat(element.textContent) === 0) {
@@ -407,6 +565,7 @@ function renderAll() {
   renderStats();
   renderLogList();
   updateRangeTotal();
+  if (!chartCollapsed) renderChart();
 }
 
 // ============ 左滑手势 ============
@@ -768,6 +927,14 @@ $('todayStatCard').addEventListener('click', () => {
 
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
+// 窗口 resize 时重绘图表
+let chartResizeTimer = null;
+window.addEventListener('resize', () => {
+  if (chartCollapsed) return;
+  clearTimeout(chartResizeTimer);
+  chartResizeTimer = setTimeout(renderChart, 200);
+});
+
 // ============ 天气 & 顶栏日期 ============
 const WEATHER_CACHE_KEY = 'weather_cache';
 const WEATHER_CACHE_TTL = 2 * 60 * 60 * 1000;
@@ -933,12 +1100,12 @@ function fetchWeather() {
     return;
   }
 
-  fetch('https://api.ipgeolocation.io/ipgeo?apiKey=freeipkey')
+  fetch('http://ip-api.com/json/?lang=zh-CN')
     .then((r) => r.json())
     .then((loc) => {
-      const lat = loc.latitude || 39.9042;
-      const lon = loc.longitude || 116.4074;
-      const city = loc.city || loc.region_name || loc.country_name || '未知城市';
+      const lat = loc.lat || 39.9042;
+      const lon = loc.lon || 116.4074;
+      const city = loc.city || loc.regionName || loc.country || '未知城市';
       
       return fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=3`)
         .then((r) => r.json())
