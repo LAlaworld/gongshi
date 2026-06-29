@@ -933,37 +933,60 @@ function fetchWeather() {
     return;
   }
 
-  fetch('https://wttr.in/?format=j1')
+  fetch('https://api.ipgeolocation.io/ipgeo?apiKey=freeipkey')
     .then((r) => r.json())
-    .then((data) => {
+    .then((loc) => {
+      const lat = loc.latitude || 39.9042;
+      const lon = loc.longitude || 116.4074;
+      const city = loc.city || loc.region_name || loc.country_name || '未知城市';
+      
+      return fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=3`)
+        .then((r) => r.json())
+        .then((data) => ({ data, city }));
+    })
+    .then(({ data, city }) => {
       const forecast = [];
-      const days = data.weather || [];
-      for (let i = 0; i < Math.min(3, days.length); i++) {
-        const day = days[i];
-        const code = mostFrequentCode(day.hourly || []);
-        const mintempC = parseInt(day.mintempC, 10) || 0;
-        const maxtempC = parseInt(day.maxtempC, 10) || 0;
-        const temp = parseInt(day.avgtempC, 10) || mintempC + Math.round((maxtempC - mintempC) / 2) || '--';
+      const days = data.daily || {};
+      const codes = days.weather_code || [];
+      const maxTemps = days.temperature_2m_max || [];
+      const minTemps = days.temperature_2m_min || [];
+      
+      for (let i = 0; i < Math.min(3, codes.length); i++) {
+        const code = codes[i];
+        const max = Math.round(maxTemps[i] || 0);
+        const min = Math.round(minTemps[i] || 0);
+        const temp = max === min ? max : `${min}~${max}`;
         forecast.push({ code, temp });
       }
-      try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: forecast })); } catch(e) {}
-      renderWeather(forecast);
+      
+      const result = { city, forecast };
+      try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: result })); } catch(e) {}
+      renderWeather(result);
     })
     .catch(() => {
       if (cached && cached.data) renderWeather(cached.data);
     });
 }
 
-function renderWeather(forecast) {
+function renderWeather(data) {
   const container = els.topBarWeather;
   if (!container) return;
+  const forecast = data.forecast || data;
+  const city = data.city || '';
   const dayLabels = ['今天', '明天', '后天'];
-  container.innerHTML = forecast.map((f, i) => `
+  
+  let html = '';
+  if (city) {
+    html += `<div class="weather-city">${city}</div>`;
+  }
+  html += forecast.map((f, i) => `
     <div class="weather-item weather-loaded">
       <span class="weather-day">${dayLabels[i] || ''}</span>
       <span class="weather-icon">${weatherEmoji(f.code)}</span>
       <span class="weather-temp">${f.temp}°</span>
     </div>`).join('');
+  
+  container.innerHTML = html;
 }
 
 function renderTopBarDate() {

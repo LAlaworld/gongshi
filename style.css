@@ -212,6 +212,13 @@
   .switch-account-link:hover { color: var(--amber-600); }
 
 
+  .weather-city {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--stone-500);
+    margin-bottom: 2px;
+  }
+
   .weather-item {
     display: flex;
     flex-direction: row;
