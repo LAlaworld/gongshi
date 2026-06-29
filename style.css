@@ -61,12 +61,26 @@
   }
 
   header {
-    text-align: center;
-    margin-bottom: 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .header-left, .header-right {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .header-center {
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    display: flex;
+    justify-content: flex-end;
   }
 
   header h1 {
@@ -76,7 +90,6 @@
     color: var(--stone-900);
     letter-spacing: -0.5px;
     margin-bottom: 6px;
-    flex-shrink: 0;
   }
 
   header p {
@@ -84,19 +97,6 @@
     color: var(--stone-500);
     font-weight: 400;
     margin-top: 8px;
-    display: none;
-  }
-
-  /* ---- 顶栏：日期 + 天气 ---- */
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0;
-    padding: 0 2px;
-    margin-top: 0;
-    flex: 1;
-    max-width: 50%;
   }
 
   .top-bar-date {
@@ -1081,16 +1081,20 @@
   @media (max-width: 720px) {
     .container { padding: calc(20px + var(--safe-top)) 16px calc(120px + var(--safe-bottom)); }
 
+    header { flex-wrap: wrap; justify-content: center; }
+    .header-left, .header-right { flex: 0 0 auto; width: 50%; }
+    .header-left { text-align: left; }
+    .header-right { text-align: right; }
+    .header-center { order: -1; width: 100%; }
+
     .top-bar-date-weekday { font-size: 15px; }
     .top-bar-date-full { font-size: 11px; }
     .top-bar-weather { gap: 4px; }
     .weather-icon img { width: 16px; height: 16px; }
     .weather-temp { font-size: 11px; }
 
-    header { flex-wrap: wrap; justify-content: center; }
-    header h1 { font-size: 32px; order: 1; width: 100%; }
-    .top-bar { order: 2; max-width: 100%; width: 100%; }
-    header p { font-size: 14px; display: block; order: 3; width: 100%; }
+    header h1 { font-size: 32px; }
+    header p { font-size: 14px; }
 
     .stats-grid { gap: 8px; }
     .stat-card { padding: 16px 12px; border-radius: 18px; }
