@@ -432,36 +432,14 @@ function renderChart() {
   ctx.lineJoin = 'round';
   ctx.stroke();
 
-  // 数据点 + 标签（智能避让：间距 < 40px 时只保留较大值）
-  const labelMinGap = 40;
-  const labeledIndices = new Set();
-
-  // 始终标注最大值
-  if (maxVal > 0) labeledIndices.add(maxIdx);
-
-  // 从前往后扫描，间距足够时标注
-  let lastLabelX = -999;
-  for (let i = 0; i < pointCount; i++) {
-    if (values[i] === 0) continue;
-    const px = points[i].x;
-    if (px - lastLabelX < labelMinGap) {
-      // 当前值与上次标注值比较：如果更大则替换
-      const prevLabeled = [...labeledIndices].filter(j => points[j].x === lastLabelX);
-      if (prevLabeled.length && values[i] > values[prevLabeled[0]]) {
-        labeledIndices.delete(prevLabeled[0]);
-        labeledIndices.add(i);
-        lastLabelX = px;
-      }
-      continue;
-    }
-    if (!labeledIndices.has(i)) labeledIndices.add(i);
-    lastLabelX = px;
-  }
-
+  // 数据点 + 标签（交替上下放置，避免重叠）
+  let labelToggle = 0;
   for (let i = 0; i < pointCount; i++) {
     const p = points[i];
 
-    // 圆点
+    // 圆点（非零值才画）
+    if (p.val === 0) continue;
+
     ctx.beginPath();
     ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
     ctx.fillStyle = '#fff';
@@ -470,13 +448,18 @@ function renderChart() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // 标签
-    if (!labeledIndices.has(i)) continue;
+    // 标签：奇偶交错上下
     ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
     ctx.font = 'bold 10px -apple-system, "PingFang SC", sans-serif';
     ctx.fillStyle = '#92400e';
-    ctx.fillText(p.val.toFixed(1) + 'h', p.x, p.y - 10);
+    if (labelToggle % 2 === 0) {
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(p.val.toFixed(1) + 'h', p.x, p.y - 10);
+    } else {
+      ctx.textBaseline = 'top';
+      ctx.fillText(p.val.toFixed(1) + 'h', p.x, p.y + 10);
+    }
+    labelToggle++;
   }
 
   // X 轴标签
