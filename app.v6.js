@@ -1200,7 +1200,6 @@ function fetchWeather() {
   try { cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)); } catch(e) {}
 
   if (cached && cached.ts && (Date.now() - cached.ts < WEATHER_CACHE_TTL)) {
-    // 如果缓存的是未知城市，清除缓存重新获取
     if (cached.data && cached.data.city === '未知城市') {
       localStorage.removeItem(WEATHER_CACHE_KEY);
     } else {
@@ -1209,13 +1208,15 @@ function fetchWeather() {
     }
   }
 
-  // 张家港坐标
   const lat = 31.8756;
   const lon = 120.5547;
   const city = '张家港';
 
   fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=3`)
-    .then((r) => r.json())
+    .then((r) => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
     .then((data) => {
       const forecast = [];
       const days = data.daily || {};
@@ -1235,7 +1236,8 @@ function fetchWeather() {
       try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: result })); } catch(e) {}
       renderWeather(result);
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log('天气获取失败:', err);
       if (cached && cached.data) renderWeather(cached.data);
     });
 }

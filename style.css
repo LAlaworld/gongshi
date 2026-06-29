@@ -63,6 +63,10 @@
   header {
     text-align: center;
     margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
   }
 
   header h1 {
@@ -72,6 +76,7 @@
     color: var(--stone-900);
     letter-spacing: -0.5px;
     margin-bottom: 6px;
+    flex-shrink: 0;
   }
 
   header p {
@@ -79,6 +84,7 @@
     color: var(--stone-500);
     font-weight: 400;
     margin-top: 8px;
+    display: none;
   }
 
   /* ---- 顶栏：日期 + 天气 ---- */
@@ -86,9 +92,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 0;
     padding: 0 2px;
-    margin-top: 20px;
+    margin-top: 0;
+    flex: 1;
+    max-width: 50%;
   }
 
   .top-bar-date {
@@ -1079,8 +1087,10 @@
     .weather-icon img { width: 16px; height: 16px; }
     .weather-temp { font-size: 11px; }
 
-    header h1 { font-size: 32px; }
-    header p { font-size: 14px; }
+    header { flex-wrap: wrap; justify-content: center; }
+    header h1 { font-size: 32px; order: 1; width: 100%; }
+    .top-bar { order: 2; max-width: 100%; width: 100%; }
+    header p { font-size: 14px; display: block; order: 3; width: 100%; }
 
     .stats-grid { gap: 8px; }
     .stat-card { padding: 16px 12px; border-radius: 18px; }
