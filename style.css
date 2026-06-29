@@ -261,6 +261,8 @@
     transition: transform 0.2s ease;
   }
 
+  #todayStatCard { cursor: pointer; }
+
   /* Liquid Glass highlight */
   .stat-card::before {
     content: '';

@@ -310,8 +310,8 @@ function renderLogList() {
   }
 
   const sorted = filteredLogs.slice().sort((a, b) => {
-    if (a.date !== b.date) return a.date.localeCompare(b.date);
-    return a.createdAt - b.createdAt;
+    if (a.date !== b.date) return b.date.localeCompare(a.date);
+    return b.createdAt - a.createdAt;
   });
 
   if (sorted.length === 0) {
@@ -756,6 +756,14 @@ $('importBtn').addEventListener('click', () => $('importFile').click());
 $('importFile').addEventListener('change', (e) => {
   if (e.target.files[0]) importCSV(e.target.files[0]);
   e.target.value = ''; // 允许重复选同一个文件
+});
+
+// 点击今日工时卡片：找到今日记录打开编辑，没有则新增
+$('todayStatCard').addEventListener('click', () => {
+  const today = getTodayStr();
+  const logs = getLogs();
+  const todayLog = logs.find(l => l.date === today);
+  openModal(todayLog || null);
 });
 
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
