@@ -158,7 +158,11 @@
     <div class="modal-drag-bar"></div>
     <div class="modal-header">
       <h2 class="modal-title">工时分析</h2>
-      <p class="modal-subtitle">最近12个月工时趋势</p>
+      <p class="modal-subtitle" id="analysisSubtitle">当月每日工时</p>
+    </div>
+    <div class="chart-mode-switch" id="chartModeSwitch">
+      <button class="chart-mode-btn active" data-mode="month">当月</button>
+      <button class="chart-mode-btn" data-mode="year">当年</button>
     </div>
     <div class="chart-summary" id="chartSummary"></div>
     <div class="chart-canvas-wrap">
