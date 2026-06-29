@@ -61,10 +61,10 @@
   }
 
   header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
     margin-bottom: 28px;
   }
 
@@ -74,8 +74,10 @@
   }
 
   .header-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     text-align: center;
-    flex-shrink: 0;
   }
 
   .header-right {
