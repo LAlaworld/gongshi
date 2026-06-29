@@ -72,7 +72,7 @@ async function encrypt(data) {
   const combined = new Uint8Array(iv.length + cipher.byteLength);
   combined.set(iv);
   combined.set(new Uint8Array(cipher), iv.length);
-  return btoa(String.fromCharCode(...combined));
+  return btoa(Array.from(combined).map(b => String.fromCharCode(b)).join(''));
 }
 
 async function decrypt(b64data) {
@@ -326,6 +326,9 @@ function renderChart() {
   if (allZero) {
     const scope = chartMode === 'month' ? '本月暂无工时数据' : '本年暂无工时数据';
     $('chartSummary').innerHTML = '<div class="chart-summary-item">' + scope + '</div>';
+    const c = $('workChart');
+    const cx = c.getContext('2d');
+    cx.clearRect(0, 0, c.width, c.height);
     return;
   }
 
@@ -516,8 +519,8 @@ function toggleMonth(monthKey) {
   renderLogList();
 }
 
-function renderStats() {
-  const logs = getLogs();
+function renderStats(logs) {
+  logs = logs || getLogs();
   const today = getTodayStr();
   const weekRange = getWeekRange(today);
   const monthRange = getMonthRange(today);
@@ -535,16 +538,16 @@ function renderStats() {
   animateNumber(els.monthHours, monthTotal);
 }
 
-function updateRangeTotal() {
+function updateRangeTotal(logs) {
   const startDate = els.filterStartDate.value;
   const endDate = els.filterEndDate.value;
   if (!startDate || !endDate) { els.rangeTotal.textContent = '0'; return; }
-  const total = calculateTotalInRange(getLogs(), startDate, endDate);
+  const total = calculateTotalInRange(logs || getLogs(), startDate, endDate);
   els.rangeTotal.textContent = total.toFixed(1);
 }
 
-function renderLogList() {
-  const logs = getLogs();
+function renderLogList(logs) {
+  logs = logs || getLogs();
   const startDate = els.filterStartDate.value;
   const endDate = els.filterEndDate.value;
 
@@ -648,9 +651,10 @@ function renderLogList() {
 }
 
 function renderAll() {
-  renderStats();
-  renderLogList();
-  updateRangeTotal();
+  const logs = getLogs();
+  renderStats(logs);
+  renderLogList(logs);
+  updateRangeTotal(logs);
 }
 
 // ============ 左滑手势 ============
@@ -1338,7 +1342,6 @@ async function startApp() {
       if (JSON.stringify(current) !== JSON.stringify(remote.logs)) {
         saveLogsLocal(remote.logs);
         renderAll();
-        updateRangeTotal();
       }
     }
   }
@@ -1349,8 +1352,13 @@ async function startApp() {
   renderTopBarDate();
   fetchWeather();
 
-  // 每 30 秒检查一次远程更新
-  setInterval(pullRemote, 30000);
+  // 每 5 分钟检查一次远程更新
+  setInterval(pullRemote, 300000);
+
+  // 页面回到前台时立即拉取一次
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) pullRemote();
+  });
 }
 
 (function init() {
