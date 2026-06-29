@@ -179,6 +179,23 @@ function formatDateString(date) {
   return `${y}-${m}-${d}`;
 }
 
+function normalizeDate(str) {
+  if (!str) return null;
+  const s = str.trim();
+  let y, m, d;
+  const m1 = s.match(/^(\d{4})[-\/年.](\d{1,2})[-\/月.](\d{1,2})日?$/);
+  if (m1) { y = +m1[1]; m = +m1[2]; d = +m1[3]; }
+  else {
+    const m2 = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
+    if (m2) { y = +m2[3]; m = +m2[1]; d = +m2[2]; }
+    else return null;
+  }
+  if (y < 100) y += 2000;
+  const date = new Date(y, m - 1, d);
+  if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return null;
+  return formatDateString(date);
+}
+
 function getTodayStr() { return formatDateString(new Date()); }
 
 function formatDateShort(dateStr) {
@@ -598,7 +615,14 @@ function importCSV(file) {
 
     let imported = 0;
     let skipped = 0;
+    let duplicates = 0;
+    let minDate = null;
+    let maxDate = null;
     const logs = getLogs(true);  // 包含已删除的
+
+    const existingKeys = new Set(
+      logs.filter(l => !l.deleted).map(l => `${l.date}|${l.duration}|${l.shift || ''}|${l.notes || ''}`)
+    );
 
     for (let i = 1; i < lines.length; i++) {
       // 简单 CSV 解析：按逗号分割，处理引号内的逗号
@@ -611,12 +635,21 @@ function importCSV(file) {
       }
       row.push(cell.trim());
 
-      const date = row[0];
+      const rawDate = row[0];
       const duration = parseFloat(row[1]);
       const shift = row[2] || '';
       const notes = row[3] || '';
 
+      const date = normalizeDate(rawDate);
+
       if (!date || isNaN(duration) || duration <= 0) { skipped++; continue; }
+
+      const key = `${date}|${duration}|${shift}|${notes}`;
+      if (existingKeys.has(key)) { duplicates++; continue; }
+      existingKeys.add(key);
+
+      if (!minDate || date < minDate) minDate = date;
+      if (!maxDate || date > maxDate) maxDate = date;
 
       const now = Date.now();
       logs.push({
@@ -632,15 +665,30 @@ function importCSV(file) {
     }
 
     if (imported === 0) {
-      showToast('没有可导入的有效记录', true);
+      const msg = duplicates > 0
+        ? `无新增记录，${duplicates} 条重复已跳过`
+        : '没有可导入的有效记录';
+      showToast(msg, true);
       return;
     }
 
     saveLogs(logs);
+
+    // 扩宽筛选范围以包含导入的数据
+    if (minDate && maxDate) {
+      const curStart = els.filterStartDate.value;
+      const curEnd = els.filterEndDate.value;
+      const newStart = (!curStart || minDate < curStart) ? minDate : curStart;
+      const newEnd = (!curEnd || maxDate > curEnd) ? maxDate : curEnd;
+      els.filterStartDate.value = newStart;
+      els.filterEndDate.value = newEnd;
+    }
+
     renderAll();
-    showToast(`导入 ${imported} 条记录` + (skipped > 0 ? `，跳过 ${skipped} 条无效行` : ''));
-    // 扩宽筛选范围
-    initFilterDates();
+    let msg = `导入 ${imported} 条记录`;
+    if (duplicates > 0) msg += `，跳过 ${duplicates} 条重复`;
+    if (skipped > 0) msg += `，跳过 ${skipped} 条无效行`;
+    showToast(msg);
   };
   reader.readAsText(file, 'UTF-8');
 }
