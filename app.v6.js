@@ -299,8 +299,8 @@ function renderLogList() {
   }
 
   const sorted = filteredLogs.slice().sort((a, b) => {
-    if (a.date !== b.date) return b.date.localeCompare(a.date);
-    return b.createdAt - a.createdAt;
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    return a.createdAt - b.createdAt;
   });
 
   if (sorted.length === 0) {
