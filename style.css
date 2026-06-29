@@ -1083,20 +1083,37 @@
   @media (max-width: 720px) {
     .container { padding: calc(20px + var(--safe-top)) 16px calc(120px + var(--safe-bottom)); }
 
-    header { flex-wrap: wrap; justify-content: center; }
-    .header-left, .header-right { flex: 0 0 auto; width: 50%; }
+    header {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .header-center {
+      position: static;
+      transform: none;
+      order: -1;
+      width: 100%;
+    }
+    .header-left, .header-right {
+      flex: 1;
+      width: auto;
+      min-width: 0;
+    }
     .header-left { text-align: left; }
-    .header-right { text-align: right; }
-    .header-center { order: -1; width: 100%; }
+    .header-right { justify-content: flex-end; }
 
-    .top-bar-date-weekday { font-size: 15px; }
+    .top-bar-date-weekday { font-size: 14px; }
     .top-bar-date-full { font-size: 11px; }
-    .top-bar-weather { gap: 4px; }
+    .top-bar-date-lunar { font-size: 11px; }
+    .top-bar-weather { gap: 3px; }
     .weather-icon img { width: 16px; height: 16px; }
-    .weather-temp { font-size: 11px; }
+    .weather-temp { font-size: 12px; }
+    .weather-day { font-size: 10px; }
+    .weather-city { font-size: 10px; }
 
-    header h1 { font-size: 32px; }
-    header p { font-size: 14px; }
+    header h1 { font-size: 30px; margin-bottom: 4px; }
+    header p { font-size: 13px; margin-top: 4px; }
 
     .stats-grid { gap: 8px; }
     .stat-card { padding: 16px 12px; border-radius: 18px; }
