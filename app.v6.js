@@ -346,7 +346,7 @@ function renderChart() {
   ].join('');
   $('chartSummary').innerHTML = summaryHTML;
 
-  // Canvas 柱状图
+  // Canvas 折线图
   const canvas = $('workChart');
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const rect = canvas.parentElement.getBoundingClientRect();
@@ -361,71 +361,98 @@ function renderChart() {
   ctx.scale(dpr, dpr);
 
   // 布局
-  const pad = { top: 20, right: 20, bottom: 40, left: 40 };
+  const pad = { top: 24, right: 32, bottom: 40, left: 42 };
   const chartW = W - pad.left - pad.right;
   const chartH = H - pad.top - pad.bottom;
-  const barCount = buckets.length;
-  const barGap = Math.max(2, Math.min(8, chartW / barCount * 0.2));
-  const barW = (chartW - barGap * (barCount - 1)) / barCount;
+  const pointCount = buckets.length;
+  const stepX = chartW / (pointCount - 1 || 1);
 
-  // 清空
-  ctx.clearRect(0, 0, W, H);
-
-  // Y 轴
+  // 计算点坐标
   const yMax = Math.max(1, Math.ceil(maxVal / 10) * 10);
   const ySteps = 4;
   const yStepVal = Math.ceil(yMax / ySteps / 5) * 5 || 5;
   const actualYMax = yStepVal * ySteps;
+  const yToPos = (v) => pad.top + chartH - (v / actualYMax) * chartH;
 
+  const points = buckets.map((b, i) => ({
+    x: pad.left + i * stepX,
+    y: yToPos(b.value),
+    val: b.value
+  }));
+
+  // 清空
+  ctx.clearRect(0, 0, W, H);
+
+  // 面积填充
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, pad.top + chartH);
+  points.forEach((p, i) => {
+    if (i === 0) { ctx.lineTo(p.x, p.y); return; }
+    const prev = points[i - 1];
+    const cpx1 = prev.x + (p.x - prev.x) / 2;
+    ctx.bezierCurveTo(cpx1, prev.y, cpx1, p.y, p.x, p.y);
+  });
+  const lastX = points[points.length - 1].x;
+  ctx.lineTo(lastX, pad.top + chartH);
+  ctx.closePath();
+  const areaGrad = ctx.createLinearGradient(0, pad.top, 0, pad.top + chartH);
+  areaGrad.addColorStop(0, 'rgba(245,158,11,0.18)');
+  areaGrad.addColorStop(1, 'rgba(245,158,11,0.02)');
+  ctx.fillStyle = areaGrad;
+  ctx.fill();
+
+  // Y 轴网格线
   ctx.textAlign = 'right';
   ctx.textBaseline = 'middle';
   ctx.font = '11px -apple-system, "PingFang SC", sans-serif';
   ctx.fillStyle = '#a8a29e';
   for (let i = 0; i <= ySteps; i++) {
     const val = i * yStepVal;
-    const y = pad.top + chartH - (val / actualYMax) * chartH;
+    const y = yToPos(val);
     ctx.fillText(val + 'h', pad.left - 8, y);
     ctx.beginPath();
-    ctx.strokeStyle = 'rgba(120,113,108,0.08)';
+    ctx.strokeStyle = 'rgba(120,113,108,0.06)';
     ctx.lineWidth = 1;
     ctx.moveTo(pad.left, y);
     ctx.lineTo(W - pad.right, y);
     ctx.stroke();
   }
 
-  // 柱子
-  for (let i = 0; i < barCount; i++) {
-    const val = values[i];
-    if (val === 0) continue;
-    const barH = (val / actualYMax) * chartH;
-    const x = pad.left + i * (barW + barGap);
-    const y = pad.top + chartH - barH;
+  // 折线
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    if (i === 0) { ctx.moveTo(p.x, p.y); return; }
+    const prev = points[i - 1];
+    const cpx = prev.x + (p.x - prev.x) / 2;
+    ctx.bezierCurveTo(cpx, prev.y, cpx, p.y, p.x, p.y);
+  });
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.stroke();
 
-    const grad = ctx.createLinearGradient(x, y, x, pad.top + chartH);
-    grad.addColorStop(0, '#f59e0b');
-    grad.addColorStop(1, '#fcd34d');
-    ctx.fillStyle = grad;
+  // 数据点 + 标签
+  const showLabels = pointCount <= 31;
+  for (let i = 0; i < pointCount; i++) {
+    const p = points[i];
 
-    const r = Math.min(3, barW / 2);
+    // 圆点
     ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + barW - r, y);
-    ctx.quadraticCurveTo(x + barW, y, x + barW, y + r);
-    ctx.lineTo(x + barW, pad.top + chartH);
-    ctx.lineTo(x, pad.top + chartH);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
-    ctx.closePath();
+    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
     ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 2;
+    ctx.stroke();
 
-    // 数值标签（仅 barW > 20 时显示）
-    if (barW > 20) {
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      ctx.font = 'bold 10px -apple-system, "PingFang SC", sans-serif';
-      ctx.fillStyle = '#92400e';
-      ctx.fillText(val.toFixed(1) + 'h', x + barW / 2, y - 3);
-    }
+    // 标签（只标非零值）
+    if (!showLabels || p.val === 0) continue;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.font = 'bold 10px -apple-system, "PingFang SC", sans-serif';
+    ctx.fillStyle = '#92400e';
+    ctx.fillText(p.val.toFixed(1) + 'h', p.x, p.y - 10);
   }
 
   // X 轴标签
@@ -434,23 +461,18 @@ function renderChart() {
   ctx.font = '10px -apple-system, "PingFang SC", sans-serif';
   ctx.fillStyle = '#a8a29e';
 
-  // 当月模式：标几个关键日期（1号、10号、20号、最后），避免太密
   if (chartMode === 'month') {
-    const keyIndices = [0]; // 1号
-    if (barCount > 10) keyIndices.push(9);  // 10号
-    if (barCount > 20) keyIndices.push(19); // 20号
-    keyIndices.push(barCount - 1); // 最后一天
-
-    for (let i = 0; i < barCount; i++) {
+    const keyIndices = [0];
+    if (pointCount > 10) keyIndices.push(9);
+    if (pointCount > 20) keyIndices.push(19);
+    keyIndices.push(pointCount - 1);
+    for (let i = 0; i < pointCount; i++) {
       if (!keyIndices.includes(i)) continue;
-      const x = pad.left + i * (barW + barGap) + barW / 2;
-      ctx.fillText(buckets[i].label, x, pad.top + chartH + 8);
+      ctx.fillText(buckets[i].label, points[i].x, pad.top + chartH + 8);
     }
   } else {
-    // 当年模式：每个月都标
-    for (let i = 0; i < barCount; i++) {
-      const x = pad.left + i * (barW + barGap) + barW / 2;
-      ctx.fillText(buckets[i].label, x, pad.top + chartH + 8);
+    for (let i = 0; i < pointCount; i++) {
+      ctx.fillText(buckets[i].label, points[i].x, pad.top + chartH + 8);
     }
   }
 }
