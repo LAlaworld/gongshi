@@ -261,6 +261,17 @@ function animateNumber(element, target, duration = 800) {
 }
 
 // ============ 渲染 ============
+const collapsedMonths = new Set();
+
+function toggleMonth(monthKey) {
+  if (collapsedMonths.has(monthKey)) {
+    collapsedMonths.delete(monthKey);
+  } else {
+    collapsedMonths.add(monthKey);
+  }
+  renderLogList();
+}
+
 function renderStats() {
   const logs = getLogs();
   const today = getTodayStr();
@@ -330,30 +341,63 @@ function renderLogList() {
     return;
   }
 
-  const html = sorted.map((log) => {
-    const { month, day, weekday } = formatDate(log.date);
-    return `
-      <div class="log-card-wrapper" data-id="${log.id}">
-        <div class="log-card-delete-bg"><span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+  const groups = {};
+  sorted.forEach((log) => {
+    const monthKey = log.date.slice(0, 7);
+    if (!groups[monthKey]) groups[monthKey] = [];
+    groups[monthKey].push(log);
+  });
+
+  const monthKeys = Object.keys(groups).sort((a, b) => a.localeCompare(b));
+
+  let html = '';
+  monthKeys.forEach((monthKey) => {
+    const monthLogs = groups[monthKey];
+    const isCollapsed = collapsedMonths.has(monthKey);
+    const totalHours = monthLogs.reduce((sum, l) => sum + l.duration, 0);
+    const [year, month] = monthKey.split('-');
+    const monthLabel = `${year}年${parseInt(month)}月`;
+
+    html += `
+      <div class="month-group">
+        <div class="month-header" onclick="toggleMonth('${monthKey}')">
+          <svg class="month-arrow ${isCollapsed ? '' : 'expanded'}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
-          左滑删除
-        </span></div>
-        <div class="log-card">
-          <div class="log-date-info">
-            <div class="log-date-main">${month}${day}日</div>
-            <div class="log-date-week">${weekday}</div>
+          <div class="month-title">${monthLabel}</div>
+          <div class="month-stats">
+            <span class="month-count">${monthLogs.length} 条</span>
+            <span class="month-total">${totalHours.toFixed(1)}h</span>
           </div>
-          <div class="log-content">
-            <div class="log-project${log.shift ? '' : ' empty'}">${log.shift || '未设置班次'}</div>
-            <div class="log-notes">${log.notes || ''}</div>
-          </div>
-          <div class="log-duration-badge">${log.duration.toFixed(1)}h</div>
+        </div>
+        <div class="month-content ${isCollapsed ? 'hidden' : ''}">
+          ${monthLogs.map((log) => {
+            const { month, day, weekday } = formatDate(log.date);
+            return `
+              <div class="log-card-wrapper" data-id="${log.id}">
+                <div class="log-card-delete-bg"><span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  左滑删除
+                </span></div>
+                <div class="log-card">
+                  <div class="log-date-info">
+                    <div class="log-date-main">${month}${day}日</div>
+                    <div class="log-date-week">${weekday}</div>
+                  </div>
+                  <div class="log-content">
+                    <div class="log-project${log.shift ? '' : ' empty'}">${log.shift || '未设置班次'}</div>
+                    <div class="log-notes">${log.notes || ''}</div>
+                  </div>
+                  <div class="log-duration-badge">${log.duration.toFixed(1)}h</div>
+                </div>
+              </div>`;
+          }).join('')}
         </div>
       </div>`;
-  }).join('');
+  });
 
   els.logList.innerHTML = html;
   setupSwipeListeners();

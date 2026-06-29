@@ -447,7 +447,77 @@
   .log-list {
     display: flex;
     flex-direction: column;
+    gap: 12px;
+  }
+
+  .month-group {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
+  }
+
+  .month-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 4px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .month-header:active { opacity: 0.7; }
+
+  .month-arrow {
+    width: 16px;
+    height: 16px;
+    color: var(--stone-400);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .month-arrow.expanded {
+    transform: rotate(90deg);
+  }
+
+  .month-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--stone-700);
+    flex: 1;
+  }
+
+  .month-stats {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .month-count {
+    color: var(--stone-400);
+  }
+
+  .month-total {
+    color: var(--amber-600);
+    font-weight: 600;
+  }
+
+  .month-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+    animation: slideDown 0.25s ease;
+  }
+
+  .month-content.hidden {
+    display: none;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .log-card-wrapper {
