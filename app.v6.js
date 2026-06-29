@@ -432,8 +432,32 @@ function renderChart() {
   ctx.lineJoin = 'round';
   ctx.stroke();
 
-  // 数据点 + 标签
-  const showLabels = pointCount <= 31;
+  // 数据点 + 标签（智能避让：间距 < 40px 时只保留较大值）
+  const labelMinGap = 40;
+  const labeledIndices = new Set();
+
+  // 始终标注最大值
+  if (maxVal > 0) labeledIndices.add(maxIdx);
+
+  // 从前往后扫描，间距足够时标注
+  let lastLabelX = -999;
+  for (let i = 0; i < pointCount; i++) {
+    if (values[i] === 0) continue;
+    const px = points[i].x;
+    if (px - lastLabelX < labelMinGap) {
+      // 当前值与上次标注值比较：如果更大则替换
+      const prevLabeled = [...labeledIndices].filter(j => points[j].x === lastLabelX);
+      if (prevLabeled.length && values[i] > values[prevLabeled[0]]) {
+        labeledIndices.delete(prevLabeled[0]);
+        labeledIndices.add(i);
+        lastLabelX = px;
+      }
+      continue;
+    }
+    if (!labeledIndices.has(i)) labeledIndices.add(i);
+    lastLabelX = px;
+  }
+
   for (let i = 0; i < pointCount; i++) {
     const p = points[i];
 
@@ -446,8 +470,8 @@ function renderChart() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // 标签（只标非零值）
-    if (!showLabels || p.val === 0) continue;
+    // 标签
+    if (!labeledIndices.has(i)) continue;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
     ctx.font = 'bold 10px -apple-system, "PingFang SC", sans-serif';
@@ -1189,22 +1213,23 @@ function fetchWeather() {
   try { cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)); } catch(e) {}
 
   if (cached && cached.ts && (Date.now() - cached.ts < WEATHER_CACHE_TTL)) {
-    renderWeather(cached.data);
-    return;
+    // 如果缓存的是未知城市，清除缓存重新获取
+    if (cached.data && cached.data.city === '未知城市') {
+      localStorage.removeItem(WEATHER_CACHE_KEY);
+    } else {
+      renderWeather(cached.data);
+      return;
+    }
   }
 
-  fetch('https://ip-api.com/json/?lang=zh-CN')
+  // 张家港坐标
+  const lat = 31.8756;
+  const lon = 120.5547;
+  const city = '张家港';
+
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=3`)
     .then((r) => r.json())
-    .then((loc) => {
-      const lat = loc.lat || 39.9042;
-      const lon = loc.lon || 116.4074;
-      const city = loc.city || loc.regionName || loc.country || '未知城市';
-      
-      return fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=3`)
-        .then((r) => r.json())
-        .then((data) => ({ data, city }));
-    })
-    .then(({ data, city }) => {
+    .then((data) => {
       const forecast = [];
       const days = data.daily || {};
       const codes = days.weather_code || [];
