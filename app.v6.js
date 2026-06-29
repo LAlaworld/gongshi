@@ -240,21 +240,17 @@ function calculateTotalInRange(logs, start, end) {
     .reduce((sum, log) => sum + log.duration, 0);
 }
 
-// ============ 工时分析图表 ============
-let chartCollapsed = true;
+// ============ 工时分析弹窗 ============
+function openAnalysisModal() {
+  const body = document.body;
+  body.classList.add('modal-open');
+  $('analysisModalOverlay').classList.add('active');
+  setTimeout(() => renderChart(), 100);
+}
 
-function toggleChart() {
-  chartCollapsed = !chartCollapsed;
-  const body = $('chartBody');
-  const arrow = $('chartArrow');
-  if (chartCollapsed) {
-    body.classList.add('hidden');
-    arrow.classList.remove('expanded');
-  } else {
-    body.classList.remove('hidden');
-    arrow.classList.add('expanded');
-    renderChart();
-  }
+function closeAnalysisModal() {
+  $('analysisModalOverlay').classList.remove('active');
+  setTimeout(() => document.body.classList.remove('modal-open'), 350);
 }
 
 function renderChart() {
@@ -565,7 +561,6 @@ function renderAll() {
   renderStats();
   renderLogList();
   updateRangeTotal();
-  if (!chartCollapsed) renderChart();
 }
 
 // ============ 左滑手势 ============
@@ -912,6 +907,9 @@ $('filterStartDate').addEventListener('change', onFilterChange);
 $('filterEndDate').addEventListener('change', onFilterChange);
 $('exportBtn').addEventListener('click', exportCSV);
 $('importBtn').addEventListener('click', () => $('importFile').click());
+$('analysisBtn').addEventListener('click', openAnalysisModal);
+$('analysisModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeAnalysisModal(); });
+$('analysisCloseBtn').addEventListener('click', closeAnalysisModal);
 $('importFile').addEventListener('change', (e) => {
   if (e.target.files[0]) importCSV(e.target.files[0]);
   e.target.value = ''; // 允许重复选同一个文件
@@ -925,12 +923,20 @@ $('todayStatCard').addEventListener('click', () => {
   openModal(todayLog || null);
 });
 
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if ($('analysisModalOverlay').classList.contains('active')) {
+      closeAnalysisModal();
+    } else {
+      closeModal();
+    }
+  }
+});
 
-// 窗口 resize 时重绘图表
+// 窗口 resize 时若分析弹窗打开则重绘图表
 let chartResizeTimer = null;
 window.addEventListener('resize', () => {
-  if (chartCollapsed) return;
+  if (!$('analysisModalOverlay').classList.contains('active')) return;
   clearTimeout(chartResizeTimer);
   chartResizeTimer = setTimeout(renderChart, 200);
 });
