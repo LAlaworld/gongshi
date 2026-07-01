@@ -1,3 +1,20 @@
+// ============ 主题切换 ============
+const THEME_KEY = 'theme';
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(THEME_KEY, next);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', next === 'dark' ? '#0a0a0c' : '#f5edd6');
+}
+
+function initThemeToggle() {
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.addEventListener('click', toggleTheme);
+}
+
 // ============ 版本号（从 SW 获取，无 API 限速问题）============
 function fetchAppVersion() {
   return new Promise((resolve) => {
@@ -1553,6 +1570,9 @@ async function startApp() {
 }
 
 (function init() {
+  // 初始化主题切换按钮
+  initThemeToggle();
+
   // 自动获取版本号
   fetchAppVersion().then(v => {
     const versionEl = document.querySelector('.version-footer');

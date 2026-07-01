@@ -29,19 +29,118 @@
     --shift-mid: #6366f1;
     --shift-night: #1e40af;
     --today-accent: #f59e0b;
+
+    /* === 语义文字色（浅色默认） === */
+    --text-accent: var(--amber-700);
+    --text-accent-hover: var(--amber-600);
+    --text-accent-soft: var(--amber-600);
+
+    /* === 主题变量（浅色默认） === */
+    --body-bg:
+      radial-gradient(ellipse 80% 60% at 12% 0%, rgba(96,165,250,0.55) 0%, transparent 50%),
+      radial-gradient(ellipse 65% 55% at 88% 8%, rgba(167,139,250,0.48) 0%, transparent 50%),
+      radial-gradient(ellipse 55% 50% at 78% 88%, rgba(52,211,153,0.38) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 55% at 3% 65%, rgba(196,181,253,0.45) 0%, transparent 50%),
+      radial-gradient(ellipse 45% 40% at 50% 45%, rgba(254,243,199,0.6) 0%, transparent 55%),
+      #f5edd6;
+    --card-bg: rgba(255,255,255,0.02);
+    --card-bg-today: rgba(255,251,235,0.03);
+    --card-border: rgba(255,255,255,0.25);
+    --card-highlight: rgba(255,255,255,0.6);
+    --card-inset: rgba(255,255,255,0.4);
+    --glass-hover: rgba(255,255,255,0.12);
+    --chip-bg: rgba(255,255,255,0.15);
+    --chip-border: rgba(255,255,255,0.4);
+    --input-bg: rgba(120,113,108,0.06);
+    --input-bg-hover: rgba(120,113,108,0.1);
+    --modal-bg: rgba(255,255,255,0.82);
+    --modal-border: rgba(255,255,255,0.5);
+    --overlay-bg: rgba(0,0,0,0.18);
+    --btn-secondary-bg: rgba(120,113,108,0.06);
+    --toast-bg: rgba(28,25,23,0.88);
+    --toast-text: #fff;
+    --export-bg: rgba(255,255,255,0.1);
+    --export-bg-hover: rgba(255,255,255,0.22);
+    --export-border: rgba(255,255,255,0.35);
+    --swiped-bg: rgba(255,252,244,0.95);
+    --log-card-active: rgba(255,255,255,0.6);
+    --month-hover: rgba(255,255,255,0.18);
+    --chart-canvas-bg: rgba(255,255,255,0.1);
+    --chart-switch-bg: rgba(120,113,108,0.1);
+    --chart-switch-active-bg: white;
+    --chart-switch-active-text: var(--amber-700);
+    --drag-bar-bg: rgba(120,113,108,0.18);
+    --login-overlay-bg: #f5edd6;
+    --title-gradient: linear-gradient(135deg, var(--stone-900) 40%, var(--amber-700));
+    --select-arrow-color: %2378716c;
+    --shadow-card: 0 2px 20px rgba(0,0,0,0.03);
+    --shadow-card-today: 0 2px 20px rgba(0,0,0,0.03), 0 0 24px rgba(245,158,11,0.08);
+  }
+
+  /* === 深色模式 === */
+  [data-theme="dark"] {
+    /* 深色模式色阶：高编号=浅色，低编号=深色，层级一致 */
+    --stone-50: #0e0d0c;
+    --stone-100: #1a1816;
+    --stone-200: #2a2724;
+    --stone-300: #44403c;
+    --stone-400: #8a847d;
+    --stone-500: #a8a29e;
+    --stone-600: #c7c2bd;
+    --stone-700: #e0ddd9;
+    --stone-800: #f0eeec;
+    --stone-900: #fafaf9;
+
+    /* 语义强调色：深色模式下用亮琥珀 */
+    --text-accent: var(--amber-400);
+    --text-accent-hover: var(--amber-300);
+    --text-accent-soft: var(--amber-400);
+
+    --body-bg:
+      radial-gradient(ellipse 80% 60% at 12% 0%, rgba(99,102,241,0.2) 0%, transparent 50%),
+      radial-gradient(ellipse 65% 55% at 88% 8%, rgba(139,92,246,0.16) 0%, transparent 50%),
+      radial-gradient(ellipse 55% 50% at 78% 88%, rgba(20,184,166,0.14) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 55% at 3% 65%, rgba(245,158,11,0.1) 0%, transparent 50%),
+      #0a0a0c;
+    --card-bg: rgba(255,255,255,0.035);
+    --card-bg-today: rgba(245,158,11,0.05);
+    --card-border: rgba(255,255,255,0.07);
+    --card-highlight: rgba(255,255,255,0.1);
+    --card-inset: rgba(255,255,255,0.04);
+    --glass-hover: rgba(255,255,255,0.07);
+    --chip-bg: rgba(255,255,255,0.05);
+    --chip-border: rgba(255,255,255,0.08);
+    --input-bg: rgba(255,255,255,0.05);
+    --input-bg-hover: rgba(255,255,255,0.09);
+    --modal-bg: rgba(22,20,18,0.94);
+    --modal-border: rgba(255,255,255,0.06);
+    --overlay-bg: rgba(0,0,0,0.55);
+    --btn-secondary-bg: rgba(255,255,255,0.05);
+    --toast-bg: rgba(240,238,236,0.92);
+    --toast-text: #1a1816;
+    --export-bg: rgba(255,255,255,0.05);
+    --export-bg-hover: rgba(255,255,255,0.1);
+    --export-border: rgba(255,255,255,0.08);
+    --swiped-bg: rgba(22,20,18,0.95);
+    --log-card-active: rgba(255,255,255,0.08);
+    --month-hover: rgba(255,255,255,0.05);
+    --chart-canvas-bg: rgba(255,255,255,0.03);
+    --chart-switch-bg: rgba(255,255,255,0.05);
+    --chart-switch-active-bg: rgba(255,255,255,0.1);
+    --chart-switch-active-text: var(--amber-400);
+    --drag-bar-bg: rgba(255,255,255,0.12);
+    --login-overlay-bg: #0a0a0c;
+    --title-gradient: linear-gradient(135deg, var(--stone-900) 40%, var(--amber-400));
+    --select-arrow-color: %23a8a29e;
+    --shadow-card: 0 2px 20px rgba(0,0,0,0.25);
+    --shadow-card-today: 0 2px 20px rgba(0,0,0,0.25), 0 0 24px rgba(245,158,11,0.12);
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'HarmonyOS Sans', sans-serif;
-    background:
-      radial-gradient(ellipse 75% 55% at 15% 0%, rgba(147,197,253,0.45) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 50% at 85% 10%, rgba(167,139,250,0.35) 0%, transparent 50%),
-      radial-gradient(ellipse 50% 45% at 75% 85%, rgba(94,234,212,0.3) 0%, transparent 50%),
-      radial-gradient(ellipse 65% 50% at 5% 70%, rgba(196,181,253,0.35) 0%, transparent 50%),
-      radial-gradient(ellipse 40% 35% at 50% 50%, rgba(255,255,255,0.5) 0%, transparent 55%),
-      #fef9ee;
+    background: var(--body-bg);
     min-height: 100vh;
     color: var(--stone-800);
     -webkit-font-smoothing: antialiased;
@@ -50,6 +149,7 @@
     -webkit-user-select: none;
     user-select: none;
     overscroll-behavior: none;
+    transition: background 0.4s ease;
   }
 
   body.modal-open {
@@ -77,7 +177,7 @@
     color: var(--stone-900);
     letter-spacing: -0.5px;
     margin-bottom: 0;
-    background: linear-gradient(135deg, var(--stone-900) 40%, var(--amber-700));
+    background: var(--title-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -90,10 +190,10 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255,255,255,0.2);
+    background: var(--chip-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid var(--chip-border);
     border-radius: 20px;
     padding: 6px 14px 6px 6px;
     box-shadow: 0 1px 8px rgba(0,0,0,0.04);
@@ -147,12 +247,49 @@
     text-align: left;
     font-family: inherit;
   }
-  .switch-account-link:hover { color: var(--amber-600); }
+  .switch-account-link:hover { color: var(--text-accent-hover); }
   .switch-account-link:focus-visible {
     outline: 1.5px solid var(--amber-500);
     outline-offset: 2px;
     border-radius: 3px;
   }
+
+  /* ---- 主题切换按钮 ---- */
+  .theme-toggle {
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: end;
+    align-self: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--chip-border);
+    background: var(--chip-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--stone-600);
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover {
+    background: var(--glass-hover);
+    transform: scale(1.05);
+  }
+  .theme-toggle:active { transform: scale(0.92); }
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--amber-500);
+    outline-offset: 2px;
+  }
+  .theme-toggle svg { width: 18px; height: 18px; }
+  .theme-icon-sun { display: none; }
+  .theme-icon-moon { display: block; }
+  [data-theme="dark"] .theme-icon-sun { display: block; }
+  [data-theme="dark"] .theme-icon-moon { display: none; }
 
   .top-bar-date {
     display: flex;
@@ -187,7 +324,7 @@
 
   .top-bar-date-lunar {
     font-size: 12px;
-    color: var(--amber-600);
+    color: var(--text-accent-soft);
     font-weight: 500;
     letter-spacing: 0.3px;
   }
@@ -224,22 +361,23 @@
 
   .login-overlay {
     position: fixed; inset: 0;
-    background: #fef9ee;
+    background: var(--login-overlay-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: env(safe-area-inset-top, 20px) 20px env(safe-area-inset-bottom, 20px);
+    transition: background 0.4s ease;
   }
   .login-overlay.hidden { display: none; }
   .login-card {
     text-align: center;
-    background: rgba(255,255,255,0.1);
+    background: var(--card-bg);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255,255,255,0.7);
+    border: 1px solid var(--card-border);
     border-radius: 24px;
     padding: 40px 32px;
-    box-shadow: 0 2px 40px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+    box-shadow: 0 2px 40px rgba(0,0,0,0.06), inset 0 1px 0 var(--card-inset);
     width: 100%;
     max-width: 340px;
     margin: 0 auto;
@@ -251,7 +389,7 @@
     background: rgba(245,158,11,0.12);
     display: flex; align-items: center; justify-content: center;
   }
-  .login-icon svg { width: 28px; height: 28px; stroke: var(--amber-600); }
+  .login-icon svg { width: 28px; height: 28px; stroke: var(--text-accent-soft); }
   .login-title {
     font-size: 28px;
     font-weight: 700;
@@ -264,7 +402,7 @@
     border: none;
     border-radius: var(--radius-input);
     font-size: 16px; color: var(--stone-700);
-    background: rgba(120,113,108,0.08);
+    background: var(--input-bg);
     text-align: center;
     font-family: inherit;
     margin-bottom: 16px; min-height: 48px;
@@ -273,7 +411,7 @@
   }
   .login-input:focus {
     outline: none;
-    background: rgba(120,113,108,0.12);
+    background: var(--input-bg-hover);
     box-shadow: 0 0 0 2px var(--amber-500);
   }
   .login-input.error { box-shadow: 0 0 0 2px var(--red-500); animation: shake 0.5s ease; }
@@ -301,18 +439,18 @@
   }
 
   .stat-card {
-    background: rgba(255,255,255,0.1);
+    background: var(--card-bg);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border: 1px solid rgba(255,255,255,0.7);
+    border: 1px solid var(--card-border);
     border-radius: var(--radius-card);
     padding: 20px 16px;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6);
+    box-shadow: var(--shadow-card), inset 0 1px 0 var(--card-inset);
     position: relative;
     overflow: hidden;
-    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1);
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1), background 0.3s ease;
   }
 
   .stat-card:focus-visible {
@@ -324,8 +462,8 @@
   #todayStatCard {
     cursor: pointer;
     border-top: 2.5px solid var(--today-accent);
-    box-shadow: 0 2px 20px rgba(0,0,0,0.04), 0 0 24px rgba(245,158,11,0.1), inset 0 1px 0 rgba(255,255,255,0.6);
-    background: rgba(255,251,235,0.15);
+    box-shadow: var(--shadow-card-today), inset 0 1px 0 var(--card-inset);
+    background: var(--card-bg-today);
   }
 
   /* Liquid Glass highlight */
@@ -334,7 +472,7 @@
     position: absolute;
     top: 0; left: 10%; right: 10%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    background: linear-gradient(90deg, transparent, var(--card-highlight), transparent);
   }
 
   .stat-card:active { transform: scale(0.97); }
@@ -355,7 +493,7 @@
     display: none;
     font-size: 10px;
     font-weight: 500;
-    color: var(--amber-600);
+    color: var(--text-accent-soft);
     text-transform: none;
     letter-spacing: 0;
     background: rgba(245,158,11,0.1);
@@ -391,15 +529,15 @@
 
   /* ---- 筛选区 (Liquid Glass) ---- */
   .filter-section {
-    background: rgba(255,255,255,0.1);
+    background: var(--card-bg);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border: 1px solid rgba(255,255,255,0.7);
+    border: 1px solid var(--card-border);
     border-radius: var(--radius-card);
     padding: 16px 20px;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6);
+    box-shadow: var(--shadow-card), inset 0 1px 0 var(--card-inset);
     margin-bottom: 24px;
     display: flex;
     flex-wrap: wrap;
@@ -413,7 +551,7 @@
     position: absolute;
     top: 0; left: 10%; right: 10%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    background: linear-gradient(90deg, transparent, var(--card-highlight), transparent);
   }
 
   .filter-group {
@@ -442,20 +580,20 @@
     font-size: 15px;
     font-family: inherit;
     color: var(--stone-700);
-    background: rgba(120,113,108,0.08);
+    background: var(--input-bg);
     transition: all 0.2s ease;
     cursor: pointer;
     min-height: 40px;
   }
 
   input[type="date"]:hover {
-    background: rgba(120,113,108,0.12);
+    background: var(--input-bg-hover);
   }
 
   input[type="date"]:focus {
     outline: none;
     box-shadow: 0 0 0 2px var(--amber-500);
-    background: rgba(120,113,108,0.12);
+    background: var(--input-bg-hover);
   }
 
   .filter-total {
@@ -478,7 +616,7 @@
     font-family: Georgia, 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'Songti SC', 'KaiTi', serif;
     font-size: 26px;
     font-weight: 400;
-    color: var(--amber-700);
+    color: var(--text-accent);
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum';
     line-height: 1;
@@ -496,7 +634,7 @@
     display: flex;
     gap: 0;
     margin-bottom: 16px;
-    background: rgba(120,113,108,0.12);
+    background: var(--chart-switch-bg);
     border-radius: 10px;
     padding: 3px;
   }
@@ -515,8 +653,8 @@
     -webkit-tap-highlight-color: transparent;
   }
   .chart-mode-btn.active {
-    background: white;
-    color: var(--amber-700);
+    background: var(--chart-switch-active-bg);
+    color: var(--chart-switch-active-text);
     font-weight: 600;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
@@ -539,7 +677,7 @@
     white-space: nowrap;
   }
   .chart-summary-item strong {
-    color: var(--amber-700);
+    color: var(--text-accent);
     font-weight: 700;
   }
   .chart-canvas-wrap {
@@ -547,7 +685,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     border-radius: 12px;
-    background: rgba(255,255,255,0.15);
+    background: var(--chart-canvas-bg);
     margin-bottom: 16px;
   }
   .chart-canvas-wrap canvas {
@@ -593,8 +731,8 @@
     gap: 5px;
     padding: 8px 14px;
     border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.5);
-    background: rgba(255,255,255,0.15);
+    border: 1px solid var(--export-border);
+    background: var(--export-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     -webkit-backface-visibility: hidden;
@@ -608,7 +746,7 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  .export-btn:hover { background: rgba(255,255,255,0.3); }
+  .export-btn:hover { background: var(--export-bg-hover); }
   .export-btn:active { transform: scale(0.96); opacity: 0.7; }
   .export-btn:focus-visible {
     outline: 2px solid var(--amber-500);
@@ -642,7 +780,7 @@
     transition: background-color 0.2s ease;
   }
 
-  .month-header:hover { background: rgba(255,255,255,0.25); }
+  .month-header:hover { background: var(--month-hover); }
   .month-header:active { opacity: 0.7; }
 
   .month-arrow {
@@ -676,7 +814,7 @@
   }
 
   .month-total {
-    color: var(--amber-600);
+    color: var(--text-accent-soft);
     font-weight: 600;
     background: rgba(245,158,11,0.08);
     padding: 2px 8px;
@@ -734,19 +872,19 @@
   }
 
   .log-card {
-    background: rgba(255,255,255,0.1);
+    background: var(--card-bg);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border: 1px solid rgba(255,255,255,0.7);
+    border: 1px solid var(--card-border);
     border-radius: var(--radius-log);
     padding: 16px 18px;
-    box-shadow: 0 1px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.04), inset 0 1px 0 var(--card-inset);
     display: flex;
     align-items: center;
     gap: 14px;
-    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), background 0.3s ease;
     position: relative;
     z-index: 1;
     touch-action: pan-y;
@@ -763,16 +901,16 @@
     position: absolute;
     top: 0; left: 10%; right: 10%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+    background: linear-gradient(90deg, transparent, var(--card-highlight), transparent);
   }
 
   .log-card.swiped {
     transform: translateX(-80px);
-    background: #fffcf4;
+    background: var(--swiped-bg);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
-  .log-card:active { background: rgba(255,255,255,0.75); }
+  .log-card:active { background: var(--log-card-active); }
 
   .log-date-info {
     min-width: 72px;
@@ -853,12 +991,12 @@
   .empty-state {
     text-align: center;
     padding: 64px 20px;
-    background: rgba(255,255,255,0.1);
+    background: var(--card-bg);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border: 1px solid rgba(255,255,255,0.7);
+    border: 1px solid var(--card-border);
     border-radius: var(--radius-card);
     box-shadow: 0 1px 12px rgba(0,0,0,0.03);
   }
@@ -871,7 +1009,7 @@
     display: flex; align-items: center; justify-content: center;
   }
 
-  .empty-icon svg { width: 32px; height: 32px; stroke: var(--amber-600); }
+  .empty-icon svg { width: 32px; height: 32px; stroke: var(--text-accent-soft); }
 
   .empty-title {
     font-family: Georgia, 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'Songti SC', 'KaiTi', serif;
@@ -946,7 +1084,7 @@
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.2);
+    background: var(--overlay-bg);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     display: flex;
@@ -960,10 +1098,10 @@
   .modal-overlay.active { opacity: 1; visibility: visible; }
 
   .modal {
-    background: rgba(255,255,255,0.78);
+    background: var(--modal-bg);
     backdrop-filter: blur(60px);
     -webkit-backdrop-filter: blur(60px);
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid var(--modal-border);
     border-bottom: none;
     border-radius: 24px 24px 0 0;
     width: 100%;
@@ -971,7 +1109,7 @@
     max-height: 85vh;
     overflow-y: auto;
     padding: 20px 24px calc(28px + var(--safe-bottom));
-    box-shadow: 0 -4px 40px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+    box-shadow: 0 -4px 40px rgba(0,0,0,0.08), inset 0 1px 0 var(--card-inset);
     transform: translateY(100%);
     transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
     -webkit-overflow-scrolling: touch;
@@ -981,7 +1119,7 @@
 
   .modal-drag-bar {
     width: 36px; height: 5px;
-    background: rgba(120,113,108,0.2);
+    background: var(--drag-bar-bg);
     border-radius: 3px;
     margin: 0 auto 16px;
   }
@@ -1020,7 +1158,7 @@
     font-size: 16px;
     font-family: inherit;
     color: var(--stone-700);
-    background: rgba(120,113,108,0.08);
+    background: var(--input-bg);
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     min-height: 48px;
     -webkit-appearance: none;
@@ -1035,7 +1173,7 @@
   textarea:focus {
     outline: none;
     box-shadow: 0 0 0 2px var(--amber-500);
-    background: rgba(120,113,108,0.12);
+    background: var(--input-bg-hover);
   }
 
   select {
@@ -1044,6 +1182,10 @@
     background-repeat: no-repeat;
     background-position: right 14px center;
     padding-right: 40px;
+  }
+
+  [data-theme="dark"] select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   }
 
   textarea { resize: vertical; min-height: 80px; }
@@ -1066,7 +1208,7 @@
   .btn:active { transform: scale(0.97); opacity: 0.85; }
 
   .btn-secondary {
-    background: rgba(120,113,108,0.08);
+    background: var(--btn-secondary-bg);
     color: var(--stone-700);
   }
   .btn-primary {
@@ -1085,9 +1227,9 @@
     top: calc(20px + var(--safe-top));
     left: 50%;
     transform: translateX(-50%) translateY(-120px);
-    background: rgba(28,25,23,0.85);
+    background: var(--toast-bg);
     backdrop-filter: blur(20px);
-    color: white;
+    color: var(--toast-text);
     padding: 12px 24px;
     border-radius: var(--radius-input);
     font-size: 14px; font-weight: 500;
@@ -1099,7 +1241,7 @@
   }
 
   .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.error { background: rgba(220,38,38,0.9); }
+  .toast.error { background: rgba(220,38,38,0.9); color: white; }
 
   /* ---- 动画 ---- */
   @keyframes fadeInUp {
@@ -1139,7 +1281,7 @@
 
     .modal {
       border-radius: 24px;
-      border-bottom: 1px solid rgba(255,255,255,0.5);
+      border-bottom: 1px solid var(--modal-border);
       transform: scale(0.95) translateY(10px);
       margin: auto; max-height: 90vh; padding: 28px;
     }
@@ -1151,11 +1293,11 @@
     .log-card-delete-bg { display: none; }
 
     .stat-card:hover {
-      background: rgba(255,255,255,0.25);
+      background: var(--glass-hover);
     }
 
     #todayStatCard:hover {
-      box-shadow: 0 4px 28px rgba(0,0,0,0.06), 0 0 32px rgba(245,158,11,0.15), inset 0 1px 0 rgba(255,255,255,0.6);
+      box-shadow: 0 4px 28px rgba(0,0,0,0.06), 0 0 32px rgba(245,158,11,0.15), inset 0 1px 0 var(--card-inset);
     }
 
     .add-btn { bottom:40px; right:40px; width:60px; height:60px; }
@@ -1179,6 +1321,10 @@
     .header-user-info {
       grid-column: 2;
       justify-self: center;
+    }
+    .theme-toggle {
+      grid-column: 3;
+      justify-self: end;
     }
     .top-bar-date-weekday { font-size: 16px; }
     .top-bar-date-full { font-size: 11px; }
@@ -1212,6 +1358,8 @@
     .add-btn:hover { transform: none; }
     .modal { padding: 18px 18px calc(22px + var(--safe-bottom)); }
     .section-title { font-size: 22px; }
+    .theme-toggle { width: 34px; height: 34px; }
+    .theme-toggle svg { width: 16px; height: 16px; }
   }
 
   .version-footer {
