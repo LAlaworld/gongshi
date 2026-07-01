@@ -193,21 +193,17 @@
 <script src="app.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
+    let refreshing = false;
+    // 当新的 SW 接管页面时，自动刷新
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+
     navigator.serviceWorker.register('sw.js').then(reg => {
       // 每次打开页面强制检查 SW 更新（绕过浏览器 24h 限制）
       reg.update();
-
-      // 检测到新版本
-      reg.addEventListener('updatefound', () => {
-        const newSW = reg.installing;
-        if (!newSW) return;
-        newSW.addEventListener('statechange', () => {
-          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-            // 新 SW 已安装，通知用户
-            document.dispatchEvent(new CustomEvent('sw-update-ready'));
-          }
-        });
-      });
     });
 
     // 页面可见时也检查一下

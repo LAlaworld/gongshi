@@ -1,3 +1,6 @@
+// 每次推送更新此版本号，浏览器会检测到 sw.js 变化并自动更新
+const SW_VERSION = '2026.07.01';
+
 // SW 缓存名在安装时自动生成，无需手动维护
 const PRECACHE = [
   '/gongshi/',
@@ -27,6 +30,13 @@ self.addEventListener('activate', e => {
     )
   );
   self.clients.claim();
+});
+
+// 响应版本号请求
+self.addEventListener('message', e => {
+  if (e.data === 'GET_VERSION') {
+    e.source.postMessage({ type: 'VERSION', version: SW_VERSION });
+  }
 });
 
 self.addEventListener('fetch', e => {

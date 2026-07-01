@@ -1,35 +1,23 @@
-// ============ 版本号（自动从 GitHub 获取）============
-async function fetchAppVersion() {
-  try {
-    const res = await fetch('https://api.github.com/repos/LAlaworld/gongshi/commits?per_page=1');
-    if (!res.ok) return '—';
-    const commits = await res.json();
-    if (!commits.length) return '—';
-    const sha = commits[0].sha.slice(0, 7);
-    const date = new Date(commits[0].commit.committer.date);
-    const d = String(date.getMonth() + 1).padStart(2, '0') + '.' + String(date.getDate()).padStart(2, '0');
-
-    // 检测新版本部署 → 清除缓存并自动刷新
-    const storedSha = localStorage.getItem('_gongshi_deploy_sha');
-    if (storedSha && storedSha !== sha) {
-      localStorage.setItem('_gongshi_deploy_sha', sha);
-      const toast = document.getElementById('toast');
-      if (toast) { toast.textContent = '发现新版本，正在更新…'; toast.classList.add('show'); }
-      if ('caches' in window) {
-        const keys = await caches.keys();
-        await Promise.all(keys.filter(k => k.startsWith('gongshi')).map(k => caches.delete(k)));
-      }
-      if ('serviceWorker' in navigator) {
-        const reg = await navigator.serviceWorker.getRegistration();
-        if (reg) await reg.unregister();
-      }
-      setTimeout(() => location.reload(), 800);
-      return '—';
-    }
-    if (!storedSha) localStorage.setItem('_gongshi_deploy_sha', sha);
-
-    return d + ' ' + sha;
-  } catch(e) { return '—'; }
+// ============ 版本号（从 SW 获取，无 API 限速问题）============
+function fetchAppVersion() {
+  return new Promise((resolve) => {
+    if (!('serviceWorker' in navigator)) { resolve('—'); return; }
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (!reg || !reg.active) { resolve('—'); return; }
+      const handler = (e) => {
+        if (e.data && e.data.type === 'VERSION') {
+          navigator.serviceWorker.removeEventListener('message', handler);
+          resolve(e.data.version);
+        }
+      };
+      navigator.serviceWorker.addEventListener('message', handler);
+      reg.active.postMessage('GET_VERSION');
+      setTimeout(() => {
+        navigator.serviceWorker.removeEventListener('message', handler);
+        resolve('—');
+      }, 2000);
+    }).catch(() => resolve('—'));
+  });
 }
 
 // ============ DOM 缓存 ============
@@ -1543,12 +1531,6 @@ async function startApp() {
   fetchAppVersion().then(v => {
     const versionEl = document.querySelector('.version-footer');
     if (versionEl) versionEl.textContent = v;
-  });
-
-  // SW 更新就绪 → 提示并自动刷新
-  document.addEventListener('sw-update-ready', () => {
-    showToast('发现新版本，正在更新…');
-    setTimeout(() => location.reload(), 1500);
   });
 
   const user = getCurrentUser();
