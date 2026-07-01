@@ -1261,7 +1261,7 @@ function getSolarTerm(y, m, d) {
 }
 
 // ---- 天气 ----
-function weatherEmoji(code) {
+function weatherIcon(code) {
   const icon = (file) =>
     `<img src="weather-icons/${file}.svg" width="20" height="20" alt="" style="vertical-align:-3px;">`;
 
@@ -1318,7 +1318,7 @@ function mostFrequentCode(hourly) {
 const DEFAULT_LOCATION = { lat: 31.8756, lon: 120.5547, city: '张家港' };
 
 function doFetchWeather(lat, lon, city) {
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=7`)
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=2`)
     .then((r) => {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
@@ -1330,7 +1330,7 @@ function doFetchWeather(lat, lon, city) {
       const maxTemps = days.temperature_2m_max || [];
       const minTemps = days.temperature_2m_min || [];
 
-      for (let i = 0; i < Math.min(7, codes.length); i++) {
+      for (let i = 0; i < Math.min(2, codes.length); i++) {
         const code = codes[i];
         const max = Math.round(maxTemps[i] || 0);
         const min = Math.round(minTemps[i] || 0);
@@ -1408,7 +1408,7 @@ function renderWeather(data) {
       label = '周' + weekdays[d.getDay()];
     }
     html += `<span class="weather-day-item">${label}</span>`;
-    html += `<span class="weather-icon-temp">${weatherEmoji(f.code)} ${f.temp}°</span>`;
+    html += `<span class="weather-icon-temp">${weatherIcon(f.code)} ${f.temp}°</span>`;
   });
 
   container.innerHTML = html;
