@@ -38,8 +38,8 @@
   </header>
 
   <div class="stats-grid">
-    <div class="stat-card" id="todayStatCard">
-      <div class="stat-label">今日工时</div>
+    <div class="stat-card" id="todayStatCard" role="button" aria-label="点击新增或编辑今日工时记录" tabindex="0">
+      <div class="stat-label">今日工时 <span class="tap-hint">可点击</span></div>
       <div class="stat-date" id="todayRange"></div>
       <div>
         <span class="stat-value" id="todayHours">0</span>
@@ -115,7 +115,7 @@
   </svg>
 </button>
 
-<div class="modal-overlay" id="modalOverlay">
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <div class="modal-drag-bar"></div>
     <div class="modal-header">
@@ -126,15 +126,15 @@
       <input type="hidden" id="editId">
       <div class="form-group">
         <label class="form-label" for="logDate">日期</label>
-        <input type="date" id="logDate" required>
+        <input type="date" id="logDate" required aria-required="true">
       </div>
       <div class="form-group">
         <label class="form-label" for="hours">工时（小时）</label>
-        <input type="number" id="hours" min="0" step="0.5" inputmode="decimal" pattern="[0-9]*" placeholder="例如：8" required>
+        <input type="number" id="hours" min="0" step="0.5" inputmode="decimal" pattern="[0-9]*" placeholder="例如：8" required aria-required="true">
       </div>
       <div class="form-group">
         <label class="form-label" for="shift">班次 <span class="label-hint">（选填）</span></label>
-        <select id="shift">
+        <select id="shift" aria-label="选择班次">
           <option value="">请选择班次</option>
           <option value="早班">早班</option>
           <option value="中班">中班</option>
@@ -143,11 +143,11 @@
       </div>
       <div class="form-group">
         <label class="form-label" for="notes">备注 <span class="label-hint">（选填）</span></label>
-        <textarea id="notes" placeholder="记录一下做了什么..."></textarea>
+        <textarea id="notes" placeholder="记录一下做了什么..." aria-label="备注"></textarea>
       </div>
       <div class="modal-actions" id="modalActions">
         <button type="button" class="btn btn-secondary" id="cancelBtn">取消</button>
-        <button type="button" class="btn btn-danger" id="deleteBtn" style="display:none">删除</button>
+        <button type="button" class="btn btn-danger" id="deleteBtn" style="display:none" aria-label="删除此记录">删除</button>
         <button type="submit" class="btn btn-primary" id="saveBtn">保存记录</button>
       </div>
     </form>
@@ -156,20 +156,20 @@
 
 <div class="toast" id="toast"></div>
 
-<div class="modal-overlay" id="analysisModalOverlay">
+<div class="modal-overlay" id="analysisModalOverlay" role="dialog" aria-modal="true" aria-label="工时分析">
   <div class="modal analysis-modal">
     <div class="modal-drag-bar"></div>
     <div class="modal-header">
       <h2 class="modal-title">工时分析</h2>
       <p class="modal-subtitle" id="analysisSubtitle">当月每日工时</p>
     </div>
-    <div class="chart-mode-switch" id="chartModeSwitch">
-      <button class="chart-mode-btn active" data-mode="month">当月</button>
-      <button class="chart-mode-btn" data-mode="year">当年</button>
+    <div class="chart-mode-switch" id="chartModeSwitch" role="tablist" aria-label="图表时间范围">
+      <button class="chart-mode-btn active" data-mode="month" role="tab" aria-selected="true">当月</button>
+      <button class="chart-mode-btn" data-mode="year" role="tab" aria-selected="false">当年</button>
     </div>
-    <div class="chart-summary" id="chartSummary"></div>
+    <div class="chart-summary" id="chartSummary" aria-live="polite"></div>
     <div class="chart-canvas-wrap">
-      <canvas id="workChart" width="700" height="300"></canvas>
+      <canvas id="workChart" width="700" height="300" role="img" aria-label="工时图表"></canvas>
     </div>
     <div class="modal-actions">
       <button type="button" class="btn btn-secondary" id="analysisCloseBtn">关闭</button>

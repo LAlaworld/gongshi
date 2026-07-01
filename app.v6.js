@@ -147,19 +147,35 @@ function scheduleSync(logs) {
 }
 
 // ============ 数据层（按账号隔离）============
+let _logsCache = null;
+let _logsCacheKey = null;
+
 function getLogs(includeDeleted) {
   try {
     const key = getStorageKey();
     if (!key) return [];
+    if (_logsCache !== null && _logsCacheKey === key) {
+      return includeDeleted ? _logsCache : _logsCache.filter(l => !l.deleted);
+    }
     const d = localStorage.getItem(key);
     const logs = d ? JSON.parse(d) : [];
+    _logsCache = logs;
+    _logsCacheKey = key;
     return includeDeleted ? logs : logs.filter(l => !l.deleted);
   } catch(e) { return []; }
 }
 
+function invalidateLogsCache() {
+  _logsCache = null;
+  _logsCacheKey = null;
+}
+
 function saveLogsLocal(logs) {
-  try { localStorage.setItem(getStorageKey(), JSON.stringify(logs)); }
-  catch(e) { showToast('保存失败，存储空间不足', true); }
+  try {
+    localStorage.setItem(getStorageKey(), JSON.stringify(logs));
+    _logsCache = logs;
+    _logsCacheKey = getStorageKey();
+  } catch(e) { showToast('保存失败，存储空间不足', true); }
 }
 
 function saveLogs(logs) {
@@ -249,10 +265,12 @@ function openAnalysisModal() {
   const body = document.body;
   body.classList.add('modal-open');
   $('analysisModalOverlay').classList.add('active');
+  trapFocus($('analysisModalOverlay'));
   setTimeout(() => renderChart(), 100);
 }
 
 function closeAnalysisModal() {
+  releaseFocusTrap();
   $('analysisModalOverlay').classList.remove('active');
   setTimeout(() => document.body.classList.remove('modal-open'), 350);
 }
@@ -266,7 +284,11 @@ function switchChartMode(mode) {
 
 function updateChartModeUI() {
   const btns = $('chartModeSwitch').querySelectorAll('.chart-mode-btn');
-  btns.forEach(b => b.classList.toggle('active', b.dataset.mode === chartMode));
+  btns.forEach(b => {
+    const isActive = b.dataset.mode === chartMode;
+    b.classList.toggle('active', isActive);
+    b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
   $('analysisSubtitle').textContent = chartMode === 'month' ? '当月每日工时' : '当年每月工时';
 }
 
@@ -489,12 +511,13 @@ function renderChart() {
 
 // ============ 动画 ============
 function animateNumber(element, target, duration = 800) {
-  if (target === 0 && parseFloat(element.textContent) === 0) {
+  const currentVal = parseFloat(element.textContent);
+  const start = isNaN(currentVal) ? 0 : currentVal;
+  if (target === 0 && start === 0) {
     element.textContent = '0.0';
     return;
   }
   let startTime = null;
-  const start = 0;
 
   function update(timestamp) {
     if (!startTime) startTime = timestamp;
@@ -518,6 +541,14 @@ function toggleMonth(monthKey) {
   }
   renderLogList();
 }
+
+// 事件委托：月份折叠/展开
+els.logList.addEventListener('click', (e) => {
+  const header = e.target.closest('.month-header');
+  if (header && header.dataset.month) {
+    toggleMonth(header.dataset.month);
+  }
+});
 
 function renderStats(logs) {
   logs = logs || getLogs();
@@ -607,7 +638,7 @@ function renderLogList(logs) {
 
     html += `
       <div class="month-group">
-        <div class="month-header" onclick="toggleMonth('${monthKey}')">
+        <div class="month-header" data-month="${monthKey}">
           <svg class="month-arrow ${isCollapsed ? '' : 'expanded'}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
@@ -656,7 +687,6 @@ function renderAll() {
   renderLogList(logs);
   updateRangeTotal(logs);
 }
-
 // ============ 左滑手势 ============
 function setupSwipeListeners() {
   document.querySelectorAll('.log-card').forEach((card) => {
@@ -799,11 +829,43 @@ function openModal(existingLog) {
   }
 
   setTimeout(() => els.hours.focus(), 400);
+  trapFocus(els.modalOverlay);
 }
 
 function closeModal() {
+  releaseFocusTrap();
   els.modalOverlay.classList.remove('active');
   setTimeout(() => document.body.classList.remove('modal-open'), 350);
+}
+
+// ============ 焦点陷阱（无障碍）============
+let _focusTrapHandler = null;
+let _focusTrapEl = null;
+
+function trapFocus(el) {
+  _focusTrapEl = el;
+  const focusable = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  _focusTrapHandler = (e) => {
+    if (e.key !== 'Tab') return;
+    const items = el.querySelectorAll(focusable);
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  };
+  document.addEventListener('keydown', _focusTrapHandler);
+}
+
+function releaseFocusTrap() {
+  if (_focusTrapHandler) {
+    document.removeEventListener('keydown', _focusTrapHandler);
+    _focusTrapHandler = null;
+    _focusTrapEl = null;
+  }
 }
 
 // ============ 表单提交 ============
@@ -894,12 +956,39 @@ function importCSV(file) {
   reader.onload = function() {
     const text = reader.result;
     // 去掉 BOM
-    const clean = text.replace(/^﻿/, '');
-    const lines = clean.split(/\r?\n/).filter((l) => l.trim());
+    const clean = text.replace(/^\ufeff/, '');
 
-    if (lines.length < 2) { showToast('CSV 文件为空或格式不对', true); return; }
+    // 标准 CSV 解析：支持引号内换行和逗号
+    function parseCSV(str) {
+      const rows = [];
+      let row = [], cell = '', inQuote = false;
+      for (let i = 0; i < str.length; i++) {
+        const ch = str[i];
+        if (inQuote) {
+          if (ch === '"') {
+            if (str[i + 1] === '"') { cell += '"'; i++; }
+            else { inQuote = false; }
+          } else { cell += ch; }
+        } else {
+          if (ch === '"') { inQuote = true; }
+          else if (ch === ',') { row.push(cell.trim()); cell = ''; }
+          else if (ch === '\n' || (ch === '\r' && str[i + 1] === '\n')) {
+            row.push(cell.trim());
+            if (row.some(c => c !== '')) rows.push(row);
+            row = []; cell = '';
+            if (ch === '\r') i++;
+          } else { cell += ch; }
+        }
+      }
+      row.push(cell.trim());
+      if (row.some(c => c !== '')) rows.push(row);
+      return rows;
+    }
 
-    const header = lines[0];
+    const rows = parseCSV(clean);
+    if (rows.length < 2) { showToast('CSV 文件为空或格式不对', true); return; }
+
+    const header = rows[0].join(',');
     if (!header.includes('日期') && !header.includes('工时')) {
       showToast('CSV 格式不匹配，请使用本工具导出的文件', true);
       return;
@@ -910,22 +999,15 @@ function importCSV(file) {
     let duplicates = 0;
     let minDate = null;
     let maxDate = null;
-    const logs = getLogs(true);  // 包含已删除的
+    const logs = getLogs(true);
 
     const existingKeys = new Set(
       logs.filter(l => !l.deleted).map(l => `${l.date}|${l.duration}|${l.shift || ''}|${l.notes || ''}`)
     );
 
-    for (let i = 1; i < lines.length; i++) {
-      // 简单 CSV 解析：按逗号分割，处理引号内的逗号
-      const row = [];
-      let cell = '', inQuote = false;
-      for (const ch of lines[i]) {
-        if (ch === '"') { inQuote = !inQuote; continue; }
-        if (ch === ',' && !inQuote) { row.push(cell.trim()); cell = ''; continue; }
-        cell += ch;
-      }
-      row.push(cell.trim());
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (row.length < 2) { skipped++; continue; }
 
       const rawDate = row[0];
       const duration = parseFloat(row[1]);
@@ -966,7 +1048,6 @@ function importCSV(file) {
 
     saveLogs(logs);
 
-    // 扩宽筛选范围以包含导入的数据
     if (minDate && maxDate) {
       const curStart = els.filterStartDate.value;
       const curEnd = els.filterEndDate.value;
@@ -1013,12 +1094,16 @@ $('importFile').addEventListener('change', (e) => {
   e.target.value = ''; // 允许重复选同一个文件
 });
 
-// 点击今日工时卡片：找到今日记录打开编辑，没有则新增
-$('todayStatCard').addEventListener('click', () => {
+// 点击/键盘操作今日工时卡片：找到今日记录打开编辑，没有则新增
+function openTodayLog() {
   const today = getTodayStr();
   const logs = getLogs();
   const todayLog = logs.find(l => l.date === today);
   openModal(todayLog || null);
+}
+$('todayStatCard').addEventListener('click', openTodayLog);
+$('todayStatCard').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTodayLog(); }
 });
 
 document.addEventListener('keydown', (e) => {
@@ -1195,6 +1280,42 @@ function mostFrequentCode(hourly) {
   return best || 113;
 }
 
+// 默认位置（张家港），当用户拒绝定位时使用
+const DEFAULT_LOCATION = { lat: 31.8756, lon: 120.5547, city: '张家港' };
+
+function doFetchWeather(lat, lon, city) {
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=3`)
+    .then((r) => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then((data) => {
+      const forecast = [];
+      const days = data.daily || {};
+      const codes = days.weather_code || [];
+      const maxTemps = days.temperature_2m_max || [];
+      const minTemps = days.temperature_2m_min || [];
+
+      for (let i = 0; i < Math.min(3, codes.length); i++) {
+        const code = codes[i];
+        const max = Math.round(maxTemps[i] || 0);
+        const min = Math.round(minTemps[i] || 0);
+        const temp = max === min ? max : `${min}~${max}`;
+        forecast.push({ code, temp });
+      }
+
+      const result = { city, forecast };
+      try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: result })); } catch(e) {}
+      renderWeather(result);
+    })
+    .catch((err) => {
+      console.log('天气获取失败:', err);
+      let cached = null;
+      try { cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)); } catch(e) {}
+      if (cached && cached.data) renderWeather(cached.data);
+    });
+}
+
 function fetchWeather() {
   let cached = null;
   try { cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)); } catch(e) {}
@@ -1208,38 +1329,30 @@ function fetchWeather() {
     }
   }
 
-  const lat = 31.8756;
-  const lon = 120.5547;
-  const city = '张家港';
-
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=3`)
-    .then((r) => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then((data) => {
-      const forecast = [];
-      const days = data.daily || {};
-      const codes = days.weather_code || [];
-      const maxTemps = days.temperature_2m_max || [];
-      const minTemps = days.temperature_2m_min || [];
-      
-      for (let i = 0; i < Math.min(3, codes.length); i++) {
-        const code = codes[i];
-        const max = Math.round(maxTemps[i] || 0);
-        const min = Math.round(minTemps[i] || 0);
-        const temp = max === min ? max : `${min}~${max}`;
-        forecast.push({ code, temp });
-      }
-      
-      const result = { city, forecast };
-      try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: result })); } catch(e) {}
-      renderWeather(result);
-    })
-    .catch((err) => {
-      console.log('天气获取失败:', err);
-      if (cached && cached.data) renderWeather(cached.data);
-    });
+  // 尝试浏览器定位，5秒超时后回退到默认城市
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude.toFixed(4);
+        const lon = pos.coords.longitude.toFixed(4);
+        // 用 open-meteo 反地理编码获取城市名
+        fetch(`https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&count=1&language=zh`)
+          .then(r => r.json())
+          .then(d => {
+            const city = (d.results && d.results[0] && d.results[0].name) || '当前位置';
+            doFetchWeather(lat, lon, city);
+          })
+          .catch(() => doFetchWeather(lat, lon, '当前位置'));
+      },
+      () => {
+        // 用户拒绝定位或定位失败，使用默认城市
+        doFetchWeather(DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon, DEFAULT_LOCATION.city);
+      },
+      { timeout: 5000, maximumAge: 600000 }
+    );
+  } else {
+    doFetchWeather(DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon, DEFAULT_LOCATION.city);
+  }
 }
 
 function renderWeather(data) {
@@ -1329,6 +1442,17 @@ function initFilterDates() {
   els.filterEndDate.value = today;
 }
 
+// 定期清理：物理删除超过 30 天的软删除记录
+function purgeDeletedLogs() {
+  const logs = getLogs(true);
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const purged = logs.filter(l => !(l.deleted && (l.updatedAt || 0) < thirtyDaysAgo));
+  if (purged.length !== logs.length) {
+    saveLogsLocal(purged);
+    invalidateLogsCache();
+  }
+}
+
 async function startApp() {
   hideLogin();
   const user = getCurrentUser();
@@ -1340,6 +1464,7 @@ async function startApp() {
     const remote = await syncFromGitHub();
     if (remote && remote.logs) {
       const current = getLogs(true);
+      invalidateLogsCache();
       // 数据有变化才更新
       if (JSON.stringify(current) !== JSON.stringify(remote.logs)) {
         saveLogsLocal(remote.logs);
@@ -1348,6 +1473,9 @@ async function startApp() {
     }
   }
   await pullRemote();
+
+  // 清理过期的软删除记录
+  purgeDeletedLogs();
 
   initFilterDates();
   renderAll();

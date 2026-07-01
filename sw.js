@@ -1,5 +1,6 @@
-const CACHE = 'gongshi-v4';
-const FILES = [
+// 每次更新代码后递增版本号，旧缓存会被自动清除
+const CACHE = 'gongshi-v5';
+const PRECACHE = [
   '/gongshi/',
   '/gongshi/index.html',
   '/gongshi/app.v6.js',
@@ -7,9 +8,12 @@ const FILES = [
   '/gongshi/manifest.json'
 ];
 
+// 需要 cache-first 的静态资源（图标、天气图标等不常变的文件）
+const STATIC_PATTERN = /\.(png|jpg|jpeg|svg|ico|woff2?)$/;
+
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(FILES))
+    caches.open(CACHE).then(c => c.addAll(PRECACHE))
   );
   self.skipWaiting();
 });
@@ -24,7 +28,36 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+
+  // 静态资源：cache-first（图标/字体等不常变）
+  if (STATIC_PATTERN.test(url.pathname)) {
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        if (cached) return cached;
+        return fetch(e.request).then(res => {
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => c.put(e.request, clone));
+          }
+          return res;
+        });
+      })
+    );
+    return;
+  }
+
+  // HTML / JS / CSS：network-first + cache fallback
+  // 在线时总拿最新版本，离线时回退到缓存
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    fetch(e.request)
+      .then(res => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
