@@ -1,10 +1,10 @@
-// 每次更新代码后改这里，缓存名和预缓存列表会自动更新
-const VERSION = '8';
-const CACHE = 'gongshi-v' + VERSION;
+// 每次 SW 文件更新时改这个日期，旧缓存会自动清除
+const CACHE_DATE = '20260701';
+const CACHE = 'gongshi-' + CACHE_DATE;
 const PRECACHE = [
   '/gongshi/',
   '/gongshi/index.html',
-  '/gongshi/app.v' + VERSION + '.js',
+  '/gongshi/app.js',
   '/gongshi/style.css',
   '/gongshi/manifest.json'
 ];

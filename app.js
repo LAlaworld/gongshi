@@ -1,5 +1,16 @@
-// ============ 版本号（每次更新改这里）============
-const APP_VERSION = '8';
+// ============ 版本号（自动从 GitHub 获取）============
+async function fetchAppVersion() {
+  try {
+    const res = await fetch('https://api.github.com/repos/LAlaworld/gongshi/commits?per_page=1');
+    if (!res.ok) return '—';
+    const commits = await res.json();
+    if (!commits.length) return '—';
+    const sha = commits[0].sha.slice(0, 7);
+    const date = new Date(commits[0].commit.committer.date);
+    const d = String(date.getMonth() + 1).padStart(2, '0') + '.' + String(date.getDate()).padStart(2, '0');
+    return d + ' ' + sha;
+  } catch(e) { return '—'; }
+}
 
 // ============ DOM 缓存 ============
 const $ = (id) => document.getElementById(id);
@@ -1495,9 +1506,11 @@ async function startApp() {
 }
 
 (function init() {
-  // 动态写入版本号
-  const versionEl = document.querySelector('.version-footer');
-  if (versionEl) versionEl.textContent = 'v' + APP_VERSION;
+  // 自动获取版本号
+  fetchAppVersion().then(v => {
+    const versionEl = document.querySelector('.version-footer');
+    if (versionEl) versionEl.textContent = v;
+  });
 
   const user = getCurrentUser();
   if (user && VALID_ACCOUNTS.includes(user)) {
