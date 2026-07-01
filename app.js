@@ -1375,18 +1375,19 @@ function renderWeather(data) {
   const forecast = data.forecast || data;
   const city = data.city || '';
   const dayLabels = ['今天', '明天', '后天'];
-  
+
+  // 城市名写入独立元素
+  const cityEl = document.getElementById('weatherCity');
+  if (cityEl) cityEl.textContent = city;
+
   let html = '';
-  if (city) {
-    html += `<div class="weather-city">${city}</div>`;
-  }
   html += forecast.map((f, i) => `
     <div class="weather-item weather-loaded">
       <span class="weather-day">${dayLabels[i] || ''}</span>
       <span class="weather-icon">${weatherEmoji(f.code)}</span>
       <span class="weather-temp">${f.temp}°</span>
     </div>`).join('');
-  
+
   container.innerHTML = html;
 }
 

@@ -65,28 +65,23 @@
   }
 
   header {
-    position: relative;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 16px;
     margin-bottom: 28px;
   }
 
-  .header-left, .header-right {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .header-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-  }
-
-  .header-right {
+  .header-title-row {
     display: flex;
-    justify-content: flex-end;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .header-info-row {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
   }
 
   header h1 {
@@ -95,35 +90,37 @@
     font-weight: 400;
     color: var(--stone-900);
     letter-spacing: -0.5px;
-    margin-bottom: 6px;
+    margin-bottom: 0;
     background: linear-gradient(135deg, var(--stone-900) 40%, var(--amber-700));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  header p {
-    font-size: 15px;
+  .header-user-line {
+    font-size: 14px;
     color: var(--stone-500);
     font-weight: 400;
-    margin-top: 8px;
+    white-space: nowrap;
   }
 
   .top-bar-date {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    justify-content: center;
+    gap: 4px;
+    flex-shrink: 0;
   }
 
   .top-bar-date-main {
     display: flex;
     align-items: baseline;
-    gap: 6px;
+    gap: 8px;
   }
 
   .top-bar-date-weekday {
     font-family: Georgia, 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'Songti SC', 'KaiTi', serif;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 400;
     line-height: 1;
     color: var(--stone-900);
@@ -143,13 +140,89 @@
     letter-spacing: 0.3px;
   }
 
-  .top-bar-weather {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  /* ---- 天气玻璃卡片 ---- */
+  .weather-card {
+    flex: 1;
+    min-width: 0;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 16px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.5);
+    position: relative;
+    overflow: hidden;
   }
 
-  /* ---- 登录页 ---- */
+  .weather-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 15%; right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+  }
+
+  .weather-card-city {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--stone-500);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  .weather-card-forecast {
+    display: flex;
+    gap: 0;
+  }
+
+  .weather-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+    transition: opacity 0.4s;
+    position: relative;
+  }
+
+  .weather-item + .weather-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15%; bottom: 15%;
+    width: 1px;
+    background: rgba(168,162,158,0.15);
+  }
+
+  .weather-item.weather-skeleton { opacity: 0.3; }
+  .weather-item.weather-loaded { opacity: 1; }
+
+  .weather-day {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--stone-400);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .weather-icon { font-size: 22px; line-height: 1; }
+
+  .weather-temp {
+    font-family: Georgia, 'Noto Serif SC', 'Source Han Serif SC', serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--stone-800);
+    letter-spacing: -0.5px;
+  }
+
+  .weather-city {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--stone-500);
+    padding-left: 2px;
+  }
   .login-overlay {
     position: fixed; inset: 0;
     background: #fef9ee;
@@ -231,41 +304,6 @@
   }
   .switch-account-link:hover { color: var(--amber-600); }
 
-
-  .weather-city {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--stone-500);
-    padding-left: 2px;
-  }
-
-  .weather-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    transition: opacity 0.4s;
-  }
-
-  .weather-item.weather-skeleton { opacity: 0.4; }
-  .weather-item.weather-loaded { opacity: 1; }
-
-  .weather-day {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--stone-400);
-    letter-spacing: 0.3px;
-    width: 24px;
-    flex-shrink: 0;
-  }
-
-  .weather-icon { font-size: 20px; line-height: 1; }
-
-  .weather-temp {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--stone-700);
-  }
 
   /* ---- 统计卡片 (Liquid Glass) ---- */
   .stats-grid {
@@ -1147,6 +1185,26 @@
 
   /* ======== 响应式 ======== */
   @media (min-width: 721px) {
+    header {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .header-title-row {
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .header-info-row {
+      flex: 1;
+      justify-content: flex-end;
+      gap: 16px;
+    }
+    .weather-card {
+      max-width: 320px;
+    }
+
     .modal {
       border-radius: 24px;
       border-bottom: 1px solid rgba(255,255,255,0.5);
@@ -1177,36 +1235,29 @@
     .container { padding: calc(20px + var(--safe-top)) 16px calc(120px + var(--safe-bottom)); }
 
     header {
-      flex-wrap: wrap;
-      justify-content: center;
       gap: 12px;
       margin-bottom: 20px;
     }
-    .header-center {
-      position: static;
-      transform: none;
-      order: -1;
-      width: 100%;
+    .header-title-row {
+      flex-direction: column;
+      gap: 4px;
     }
-    .header-left, .header-right {
-      flex: 1;
-      width: auto;
-      min-width: 0;
+    .header-info-row {
+      flex-direction: column;
+      gap: 10px;
     }
-    .header-left { text-align: left; }
-    .header-right { justify-content: flex-end; }
 
-    .top-bar-date-weekday { font-size: 14px; }
+    .top-bar-date-weekday { font-size: 16px; }
     .top-bar-date-full { font-size: 11px; }
     .top-bar-date-lunar { font-size: 11px; }
-    .top-bar-weather { gap: 3px; }
-    .weather-icon img { width: 16px; height: 16px; }
-    .weather-temp { font-size: 12px; }
-    .weather-day { font-size: 10px; }
-    .weather-city { font-size: 10px; }
+    .weather-card { padding: 10px 14px; border-radius: 14px; }
+    .weather-card-city { font-size: 10px; margin-bottom: 6px; }
+    .weather-icon { font-size: 20px; }
+    .weather-temp { font-size: 15px; }
+    .weather-day { font-size: 9px; }
 
-    header h1 { font-size: 30px; margin-bottom: 4px; }
-    header p { font-size: 13px; margin-top: 4px; }
+    header h1 { font-size: 30px; }
+    .header-user-line { font-size: 12px; }
 
     #todayStatCard { border-top-width: 2px; }
 
