@@ -1,18 +1,53 @@
-// ============ 主题切换 ============
-const THEME_KEY = 'theme';
+// ============ 主题切换（三态：auto / light / dark）============
+const THEME_MODE_KEY = 'theme-mode';
+const _mql = window.matchMedia('(prefers-color-scheme: dark)');
 
-function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme') || 'light';
-  const next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem(THEME_KEY, next);
+function _getSystemTheme() {
+  return _mql.matches ? 'dark' : 'light';
+}
+
+function _getThemeMode() {
+  return localStorage.getItem(THEME_MODE_KEY) || 'auto';
+}
+
+function _getAppliedTheme() {
+  const mode = _getThemeMode();
+  return mode === 'auto' ? _getSystemTheme() : mode;
+}
+
+function _applyTheme() {
+  const theme = _getAppliedTheme();
+  const mode = _getThemeMode();
+  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.setAttribute('data-theme-mode', mode);
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', next === 'dark' ? '#0a0a0c' : '#f5edd6');
+  if (meta) meta.setAttribute('content', theme === 'dark' ? '#0a0a0c' : '#f5edd6');
+  // 更新按钮提示
+  const btn = document.getElementById('themeToggle');
+  if (btn) {
+    const labels = { auto: '跟随系统', light: '浅色模式', dark: '深色模式' };
+    btn.title = labels[mode] + '（点击切换）';
+    btn.setAttribute('aria-label', labels[mode]);
+  }
+}
+
+function cycleThemeMode() {
+  const modes = ['auto', 'light', 'dark'];
+  const current = _getThemeMode();
+  const next = modes[(modes.indexOf(current) + 1) % modes.length];
+  localStorage.setItem(THEME_MODE_KEY, next);
+  _applyTheme();
 }
 
 function initThemeToggle() {
   const btn = document.getElementById('themeToggle');
-  if (btn) btn.addEventListener('click', toggleTheme);
+  if (btn) btn.addEventListener('click', cycleThemeMode);
+  // 系统主题变化时，如果处于 auto 模式则自动跟随
+  _mql.addEventListener('change', () => {
+    if (_getThemeMode() === 'auto') _applyTheme();
+  });
+  // 初始化按钮提示
+  _applyTheme();
 }
 
 // ============ 版本号（从 SW 获取，无 API 限速问题）============

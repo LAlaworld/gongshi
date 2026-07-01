@@ -37,44 +37,43 @@
 
     /* === 主题变量（浅色默认） === */
     --body-bg:
-      radial-gradient(ellipse 80% 60% at 12% 0%, rgba(96,165,250,0.55) 0%, transparent 50%),
-      radial-gradient(ellipse 65% 55% at 88% 8%, rgba(167,139,250,0.48) 0%, transparent 50%),
-      radial-gradient(ellipse 55% 50% at 78% 88%, rgba(52,211,153,0.38) 0%, transparent 50%),
-      radial-gradient(ellipse 70% 55% at 3% 65%, rgba(196,181,253,0.45) 0%, transparent 50%),
-      radial-gradient(ellipse 45% 40% at 50% 45%, rgba(254,243,199,0.6) 0%, transparent 55%),
-      #f5edd6;
-    --card-bg: rgba(255,255,255,0.02);
-    --card-bg-today: rgba(255,251,235,0.03);
-    --card-border: rgba(255,255,255,0.25);
-    --card-highlight: rgba(255,255,255,0.6);
-    --card-inset: rgba(255,255,255,0.4);
-    --glass-hover: rgba(255,255,255,0.12);
-    --chip-bg: rgba(255,255,255,0.15);
-    --chip-border: rgba(255,255,255,0.4);
-    --input-bg: rgba(120,113,108,0.06);
-    --input-bg-hover: rgba(120,113,108,0.1);
-    --modal-bg: rgba(255,255,255,0.82);
-    --modal-border: rgba(255,255,255,0.5);
-    --overlay-bg: rgba(0,0,0,0.18);
-    --btn-secondary-bg: rgba(120,113,108,0.06);
+      radial-gradient(circle at 20% 20%, #c7d2fe, transparent 40%),
+      radial-gradient(circle at 80% 15%, #fbcfe8, transparent 40%),
+      radial-gradient(circle at 70% 80%, #bae6fd, transparent 40%),
+      radial-gradient(circle at 25% 75%, #fef3c7, transparent 40%),
+      #f8f5f0;
+    --card-bg: rgba(255,255,255,0.01);
+    --card-bg-today: rgba(255,251,235,0.02);
+    --card-border: rgba(255,255,255,0.15);
+    --card-highlight: rgba(255,255,255,0.3);
+    --card-inset: rgba(255,255,255,0.2);
+    --glass-hover: rgba(255,255,255,0.08);
+    --chip-bg: rgba(255,255,255,0.05);
+    --chip-border: rgba(255,255,255,0.15);
+    --input-bg: rgba(120,113,108,0.08);
+    --input-bg-hover: rgba(120,113,108,0.12);
+    --modal-bg: rgba(255,255,255,0.88);
+    --modal-border: rgba(255,255,255,0.6);
+    --overlay-bg: rgba(0,0,0,0.15);
+    --btn-secondary-bg: rgba(120,113,108,0.08);
     --toast-bg: rgba(28,25,23,0.88);
     --toast-text: #fff;
-    --export-bg: rgba(255,255,255,0.1);
-    --export-bg-hover: rgba(255,255,255,0.22);
-    --export-border: rgba(255,255,255,0.35);
-    --swiped-bg: rgba(255,252,244,0.95);
-    --log-card-active: rgba(255,255,255,0.6);
-    --month-hover: rgba(255,255,255,0.18);
-    --chart-canvas-bg: rgba(255,255,255,0.1);
+    --export-bg: rgba(255,255,255,0.55);
+    --export-bg-hover: rgba(255,255,255,0.75);
+    --export-border: rgba(255,255,255,0.6);
+    --swiped-bg: #fffcf4;
+    --log-card-active: rgba(255,255,255,0.8);
+    --month-hover: rgba(255,255,255,0.5);
+    --chart-canvas-bg: rgba(255,255,255,0.4);
     --chart-switch-bg: rgba(120,113,108,0.1);
     --chart-switch-active-bg: white;
     --chart-switch-active-text: var(--amber-700);
     --drag-bar-bg: rgba(120,113,108,0.18);
-    --login-overlay-bg: #f5edd6;
+    --login-overlay-bg: #f7f3ec;
     --title-gradient: linear-gradient(135deg, var(--stone-900) 40%, var(--amber-700));
     --select-arrow-color: %2378716c;
-    --shadow-card: 0 2px 20px rgba(0,0,0,0.03);
-    --shadow-card-today: 0 2px 20px rgba(0,0,0,0.03), 0 0 24px rgba(245,158,11,0.08);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+    --shadow-card-today: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03), 0 0 20px rgba(245,158,11,0.06);
   }
 
   /* === 深色模式 === */
@@ -286,10 +285,12 @@
     outline-offset: 2px;
   }
   .theme-toggle svg { width: 18px; height: 18px; }
-  .theme-icon-sun { display: none; }
-  .theme-icon-moon { display: block; }
-  [data-theme="dark"] .theme-icon-sun { display: block; }
-  [data-theme="dark"] .theme-icon-moon { display: none; }
+  .theme-icon-auto,
+  .theme-icon-sun,
+  .theme-icon-moon { display: none; }
+  [data-theme-mode="auto"] .theme-icon-auto { display: block; }
+  [data-theme-mode="light"] .theme-icon-sun { display: block; }
+  [data-theme-mode="dark"] .theme-icon-moon { display: block; }
 
   .top-bar-date {
     display: flex;
