@@ -1266,38 +1266,43 @@ function weatherIcon(code) {
     `<img src="weather-icons/${file}.svg" width="20" height="20" alt="" style="vertical-align:-3px;">`;
 
   const map = {
-    'thunderstorm': '雷暴',
-    'light-rain': '小雨',
-    'heavy-rain': '大雨',
-    'snow': '小雪',
-    'heavy-snow': '大雪',
-    'fog': '雾',
-    'wind': '风',
-    'tornado': '龙卷风',
     'sunny': '晴',
     'partly-cloudy': '多云',
     'cloudy': '阴',
     'overcast': '阴天',
-    'hail': '冰雹',
+    'fog': '雾',
+    'light-rain': '小雨',
+    'heavy-rain': '大雨',
+    'snow': '小雪',
+    'heavy-snow': '大雪',
     'sleet': '雨夹雪',
-    'clear-night': '晴夜',
-    'rainbow': '彩虹'
+    'thunderstorm': '雷暴',
+    'hail': '冰雹',
+    'wind': '风',
+    'clear-night': '晴夜'
   };
 
   let file, label;
-  if (code >= 200 && code < 300) { file = 'thunderstorm'; label = map[file]; }
-  else if (code >= 300 && code < 400) { file = 'light-rain'; label = map[file]; }
-  else if (code >= 500 && code < 503) { file = 'light-rain'; label = map[file]; }
-  else if (code >= 503 && code < 600) { file = 'heavy-rain'; label = map[file]; }
-  else if (code >= 600 && code < 603) { file = 'snow'; label = map[file]; }
-  else if (code >= 603 && code < 700) { file = 'heavy-snow'; label = map[file]; }
-  else if (code >= 700 && code < 750) { file = 'fog'; label = map[file]; }
-  else if (code >= 751 && code < 770) { file = 'wind'; label = map[file]; }
-  else if (code === 781) { file = 'tornado'; label = map[file]; }
-  else if (code === 800) { file = 'sunny'; label = map[file]; }
-  else if (code === 801) { file = 'partly-cloudy'; label = map[file]; }
-  else if (code === 802) { file = 'cloudy'; label = map[file]; }
-  else if (code >= 803) { file = 'overcast'; label = map[file]; }
+  // WMO Weather codes (Open-Meteo format)
+  if (code === 0) { file = 'sunny'; label = map[file]; }
+  else if (code === 1) { file = 'sunny'; label = '大部晴'; }
+  else if (code === 2) { file = 'partly-cloudy'; label = map[file]; }
+  else if (code === 3) { file = 'overcast'; label = map[file]; }
+  else if (code === 45 || code === 48) { file = 'fog'; label = map[file]; }
+  else if (code >= 51 && code <= 55) { file = 'light-rain'; label = '毛毛雨'; }
+  else if (code >= 56 && code <= 57) { file = 'sleet'; label = '冻毛毛雨'; }
+  else if (code === 61) { file = 'light-rain'; label = map[file]; }
+  else if (code === 63) { file = 'heavy-rain'; label = '中雨'; }
+  else if (code === 65) { file = 'heavy-rain'; label = map[file]; }
+  else if (code === 66 || code === 67) { file = 'sleet'; label = '冻雨'; }
+  else if (code === 71) { file = 'snow'; label = map[file]; }
+  else if (code === 73) { file = 'heavy-snow'; label = '中雪'; }
+  else if (code === 75) { file = 'heavy-snow'; label = map[file]; }
+  else if (code === 77) { file = 'snow'; label = '雪粒'; }
+  else if (code >= 80 && code <= 82) { file = 'light-rain'; label = '阵雨'; }
+  else if (code === 85 || code === 86) { file = 'snow'; label = '阵雪'; }
+  else if (code === 95) { file = 'thunderstorm'; label = map[file]; }
+  else if (code === 96 || code === 99) { file = 'hail'; label = '雷暴伴冰雹'; }
   else { file = 'partly-cloudy'; label = map[file]; }
 
   return `${icon(file)} <span style="font-size:11px;color:var(--stone-500);">${label}</span>`;
