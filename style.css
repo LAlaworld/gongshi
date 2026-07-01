@@ -54,8 +54,7 @@
 
   body.modal-open {
     overflow: hidden;
-    position: fixed;
-    width: 100%;
+    /* position: fixed / top 改由 JS 控制，避免丢滚动位置 */
   }
 
   .container {
@@ -137,13 +136,23 @@
     display: inline-block;
     font-size: 10px;
     font-weight: 500;
-    color: var(--stone-400);
+    color: var(--stone-500);
     cursor: pointer;
     transition: color 0.2s;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.2;
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: left;
+    font-family: inherit;
   }
   .switch-account-link:hover { color: var(--amber-600); }
+  .switch-account-link:focus-visible {
+    outline: 1.5px solid var(--amber-500);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
 
   .top-bar-date {
     display: flex;
@@ -196,7 +205,7 @@
   }
   .weather-day-item {
     font-size: 10px;
-    color: var(--stone-400);
+    color: var(--stone-500);
     font-weight: 600;
   }
   .weather-icon-temp {
@@ -303,7 +312,12 @@
     box-shadow: 0 2px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6);
     position: relative;
     overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .stat-card:focus-visible {
+    outline: 2px solid var(--amber-500);
+    outline-offset: 3px;
   }
 
   /* 今日卡片特殊样式：琥珀色顶部光条 + 暖光 */
@@ -339,13 +353,13 @@
 
   .tap-hint {
     display: none;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 500;
-    color: var(--amber-500);
+    color: var(--amber-600);
     text-transform: none;
     letter-spacing: 0;
     background: rgba(245,158,11,0.1);
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 6px;
   }
 
@@ -355,8 +369,8 @@
 
   .stat-date {
     font-size: 11px;
-    color: var(--stone-400);
-    font-weight: 400;
+    color: var(--stone-500);
+    font-weight: 500;
     margin-bottom: 10px;
   }
 
@@ -482,7 +496,7 @@
     display: flex;
     gap: 0;
     margin-bottom: 16px;
-    background: rgba(120,113,108,0.06);
+    background: rgba(120,113,108,0.12);
     border-radius: 10px;
     padding: 3px;
   }
@@ -596,6 +610,10 @@
 
   .export-btn:hover { background: rgba(255,255,255,0.3); }
   .export-btn:active { transform: scale(0.96); opacity: 0.7; }
+  .export-btn:focus-visible {
+    outline: 2px solid var(--amber-500);
+    outline-offset: 2px;
+  }
 
   .export-btn svg { width: 16px; height: 16px; }
 
@@ -615,12 +633,16 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 4px;
+    padding: 10px 12px;
+    margin: 0 -8px;
+    border-radius: 12px;
     cursor: pointer;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.2s ease;
   }
 
+  .month-header:hover { background: rgba(255,255,255,0.25); }
   .month-header:active { opacity: 0.7; }
 
   .month-arrow {
@@ -650,7 +672,7 @@
   }
 
   .month-count {
-    color: var(--stone-400);
+    color: var(--stone-500);
   }
 
   .month-total {
@@ -729,6 +751,11 @@
     z-index: 1;
     touch-action: pan-y;
     cursor: pointer;
+  }
+
+  .log-card:focus-visible {
+    outline: 2px solid var(--amber-500);
+    outline-offset: 2px;
   }
 
   .log-card::before {
@@ -825,7 +852,7 @@
   /* ---- 空状态 ---- */
   .empty-state {
     text-align: center;
-    padding: 60px 20px;
+    padding: 64px 20px;
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
@@ -837,14 +864,14 @@
   }
 
   .empty-icon {
-    width: 56px; height: 56px;
-    margin: 0 auto 18px;
-    border-radius: 16px;
+    width: 68px; height: 68px;
+    margin: 0 auto 20px;
+    border-radius: 18px;
     background: rgba(245,158,11,0.1);
     display: flex; align-items: center; justify-content: center;
   }
 
-  .empty-icon svg { width: 28px; height: 28px; stroke: var(--amber-600); }
+  .empty-icon svg { width: 32px; height: 32px; stroke: var(--amber-600); }
 
   .empty-title {
     font-family: Georgia, 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'Songti SC', 'KaiTi', serif;
@@ -880,6 +907,11 @@
     transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1);
     z-index: 100;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  .add-btn:focus-visible {
+    outline: 3px solid var(--amber-300);
+    outline-offset: 4px;
   }
 
   .add-btn:hover {
@@ -1185,7 +1217,7 @@
   .version-footer {
     text-align: center;
     font-size: 11px;
-    color: var(--stone-400);
+    color: var(--stone-500);
     padding: 32px 0 16px;
     letter-spacing: 0.5px;
   }

@@ -289,14 +289,38 @@ function calculateTotalInRange(logs, start, end) {
     .reduce((sum, log) => sum + log.duration, 0);
 }
 
+// ============ 弹窗滚动锁（保留 scroll 位置）============
+let _savedScrollY = 0;
+
+function lockBodyScroll() {
+  _savedScrollY = window.scrollY || window.pageYOffset || 0;
+  const body = document.body;
+  body.style.position = 'fixed';
+  body.style.top = `-${_savedScrollY}px`;
+  body.style.left = '0';
+  body.style.right = '0';
+  body.style.width = '100%';
+  body.classList.add('modal-open');
+}
+
+function unlockBodyScroll() {
+  const body = document.body;
+  body.classList.remove('modal-open');
+  body.style.position = '';
+  body.style.top = '';
+  body.style.left = '';
+  body.style.right = '';
+  body.style.width = '';
+  window.scrollTo(0, _savedScrollY);
+}
+
 // ============ 工时分析弹窗 ============
 let chartMode = 'month'; // 'month' | 'year'
 
 function openAnalysisModal() {
   chartMode = 'month';
   updateChartModeUI();
-  const body = document.body;
-  body.classList.add('modal-open');
+  lockBodyScroll();
   $('analysisModalOverlay').classList.add('active');
   trapFocus($('analysisModalOverlay'));
   setTimeout(() => renderChart(), 100);
@@ -305,7 +329,7 @@ function openAnalysisModal() {
 function closeAnalysisModal() {
   releaseFocusTrap();
   $('analysisModalOverlay').classList.remove('active');
-  setTimeout(() => document.body.classList.remove('modal-open'), 350);
+  setTimeout(unlockBodyScroll, 350);
 }
 
 function switchChartMode(mode) {
@@ -831,8 +855,7 @@ function deleteLog(id) {
 
 // ============ 弹窗 ============
 function openModal(existingLog) {
-  const body = document.body;
-  body.classList.add('modal-open');
+  lockBodyScroll();
   els.modalOverlay.classList.add('active');
 
   if (existingLog) {
@@ -870,7 +893,7 @@ function openModal(existingLog) {
 function closeModal() {
   releaseFocusTrap();
   els.modalOverlay.classList.remove('active');
-  setTimeout(() => document.body.classList.remove('modal-open'), 350);
+  setTimeout(unlockBodyScroll, 350);
 }
 
 // ============ 焦点陷阱（无障碍）============
