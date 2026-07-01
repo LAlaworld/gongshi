@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#fffbeb">
@@ -20,7 +20,7 @@
       <div class="user-avatar" id="userAvatarInitial"></div>
       <div class="user-info-text">
         <span class="current-user-tag" id="currentUserTag">—</span>
-        <span class="switch-account-link" id="switchAccountLink">切换账号</span>
+        <button type="button" class="switch-account-link" id="switchAccountLink" aria-label="切换账号">切换账号</button>
       </div>
     </div>
     <div class="top-bar-date" id="topBarDate">
@@ -64,19 +64,19 @@
     <h2 class="section-title">工时明细</h2>
     <div class="tool-btns">
       <button class="export-btn" id="analysisBtn" title="工时分析">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
         分析
       </button>
       <button class="export-btn" id="exportBtn" title="导出 CSV">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
         </svg>
         导出
       </button>
       <button class="export-btn" id="importBtn" title="导入 CSV">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
         导入
@@ -87,13 +87,13 @@
 
   <div class="filter-section">
     <div class="filter-group">
-      <label>从</label>
-      <input type="date" id="filterStartDate">
+      <label for="filterStartDate">从</label>
+      <input type="date" id="filterStartDate" name="filterStartDate" autocomplete="off">
     </div>
     <span class="filter-sep">—</span>
     <div class="filter-group">
-      <label>至</label>
-      <input type="date" id="filterEndDate">
+      <label for="filterEndDate">至</label>
+      <input type="date" id="filterEndDate" name="filterEndDate" autocomplete="off">
     </div>
     <div class="filter-total">
       <span class="filter-total-label">合计</span>
@@ -152,7 +152,7 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <div class="modal-overlay" id="analysisModalOverlay" role="dialog" aria-modal="true" aria-label="工时分析">
   <div class="modal analysis-modal">
@@ -178,7 +178,7 @@
 <div class="login-overlay" id="loginOverlay">
   <div class="login-card">
     <div class="login-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     </div>

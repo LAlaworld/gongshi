@@ -209,6 +209,17 @@ function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
+// HTML 转义，防止用户输入的 notes/shift 在 innerHTML 中注入脚本
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ============ 日期工具 ============
 function formatDateString(date) {
   const y = date.getFullYear();
@@ -618,7 +629,7 @@ function renderLogList(logs) {
       els.logList.innerHTML = `
         <div class="empty-state">
           <div class="empty-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
             </svg>
           </div>
@@ -629,7 +640,7 @@ function renderLogList(logs) {
       els.logList.innerHTML = `
         <div class="empty-state">
           <div class="empty-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
@@ -672,10 +683,12 @@ function renderLogList(logs) {
         <div class="month-content ${isCollapsed ? 'hidden' : ''}">
           ${monthLogs.map((log) => {
             const { month, day, weekday } = formatDate(log.date);
+            const safeShift = escapeHtml(log.shift);
+            const safeNotes = escapeHtml(log.notes);
             return `
               <div class="log-card-wrapper${log.shift === '早班' ? ' shift-morning' : log.shift === '中班' ? ' shift-mid' : log.shift === '晚班' ? ' shift-night' : ''}" data-id="${log.id}">
                 <div class="log-card-delete-bg"><span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                   </svg>
@@ -687,8 +700,8 @@ function renderLogList(logs) {
                     <div class="log-date-week">${weekday}</div>
                   </div>
                   <div class="log-content">
-                    <div class="log-project${log.shift ? '' : ' empty'}">${log.shift || '未设置班次'}</div>
-                    <div class="log-notes">${log.notes || ''}</div>
+                    <div class="log-project${log.shift ? '' : ' empty'}">${safeShift || '未设置班次'}</div>
+                    <div class="log-notes">${safeNotes}</div>
                   </div>
                   <div class="log-duration-badge">${log.duration.toFixed(1)}h</div>
                 </div>
