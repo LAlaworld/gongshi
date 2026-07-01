@@ -323,7 +323,6 @@ function renderChart() {
 
   const now = new Date();
   let buckets = []; // { label, value }
-  let subtitle = '';
 
   if (chartMode === 'month') {
     // 当月：按天拆分
@@ -380,7 +379,7 @@ function renderChart() {
   const total = values.reduce((a, b) => a + b, 0);
   const hasDataCount = values.filter(v => v > 0).length;
   const avg = hasDataCount > 0 ? total / hasDataCount : 0;
-  const maxVal = Math.max(...values);
+  const maxVal = values.reduce((m, v) => v > m ? v : m, 0);
   const maxIdx = values.indexOf(maxVal);
   const maxLabel = buckets[maxIdx].label;
 
@@ -709,6 +708,7 @@ function renderAll() {
   renderLogList(logs);
   updateRangeTotal(logs);
 }
+
 // ============ 左滑手势 ============
 function setupSwipeListeners() {
   document.querySelectorAll('.log-card').forEach((card) => {
@@ -1296,17 +1296,6 @@ function weatherIcon(code) {
   return `${icon(file)} <span style="font-size:11px;color:var(--stone-500);">${label}</span>`;
 }
 
-function mostFrequentCode(hourly) {
-  const counts = {};
-  let best = null, bestCount = 0;
-  hourly.forEach((h) => {
-    const c = parseInt(h.weatherCode, 10);
-    counts[c] = (counts[c] || 0) + 1;
-    if (counts[c] > bestCount) { best = c; bestCount = counts[c]; }
-  });
-  return best || 113;
-}
-
 // 默认位置（张家港），当用户拒绝定位时使用
 const DEFAULT_LOCATION = { lat: 31.8756, lon: 120.5547, city: '张家港' };
 
@@ -1498,8 +1487,9 @@ async function startApp() {
   async function pullRemote() {
     const remote = await syncFromGitHub();
     if (remote && remote.logs) {
-      const current = getLogs(true);
+      // 先失效缓存，保证读取到最新的 localStorage
       invalidateLogsCache();
+      const current = getLogs(true);
       // 数据有变化才更新
       if (JSON.stringify(current) !== JSON.stringify(remote.logs)) {
         saveLogsLocal(remote.logs);

@@ -1,5 +1,5 @@
 // 每次推送更新此版本号，浏览器会检测到 sw.js 变化并自动更新
-const SW_VERSION = '2026.07.01';
+const SW_VERSION = '2026.07.01-002';
 
 // SW 缓存名在安装时自动生成，无需手动维护
 const PRECACHE = [
