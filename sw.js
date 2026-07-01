@@ -1,9 +1,9 @@
 // 每次更新代码后递增版本号，旧缓存会被自动清除
-const CACHE = 'gongshi-v5';
+const CACHE = 'gongshi-v6';
 const PRECACHE = [
   '/gongshi/',
   '/gongshi/index.html',
-  '/gongshi/app.v6.js',
+  '/gongshi/app.v7.js',
   '/gongshi/style.css',
   '/gongshi/manifest.json'
 ];

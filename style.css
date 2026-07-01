@@ -1158,3 +1158,11 @@
     .modal { padding: 18px 18px calc(22px + var(--safe-bottom)); }
     .section-title { font-size: 22px; }
   }
+
+  .version-footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--stone-400);
+    padding: 32px 0 16px;
+    letter-spacing: 0.5px;
+  }
