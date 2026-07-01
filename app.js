@@ -1318,7 +1318,7 @@ function mostFrequentCode(hourly) {
 const DEFAULT_LOCATION = { lat: 31.8756, lon: 120.5547, city: '张家港' };
 
 function doFetchWeather(lat, lon, city) {
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=3`)
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=7`)
     .then((r) => {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
@@ -1330,7 +1330,7 @@ function doFetchWeather(lat, lon, city) {
       const maxTemps = days.temperature_2m_max || [];
       const minTemps = days.temperature_2m_min || [];
 
-      for (let i = 0; i < Math.min(3, codes.length); i++) {
+      for (let i = 0; i < Math.min(7, codes.length); i++) {
         const code = codes[i];
         const max = Math.round(maxTemps[i] || 0);
         const min = Math.round(minTemps[i] || 0);
@@ -1393,11 +1393,25 @@ function renderWeather(data) {
   const container = els.topBarWeather;
   if (!container) return;
   const forecast = data.forecast || data;
-  if (!forecast || !forecast[0]) return;
+  if (!forecast || !forecast.length) return;
 
-  // 只显示今天的天气：图标 + 温度
-  const today = forecast[0];
-  container.innerHTML = `${weatherEmoji(today.code)} <span>${today.temp}°</span>`;
+  const dayLabels = ['今天', '明天', '后天'];
+  const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+  const now = new Date();
+
+  let html = '';
+  forecast.forEach((f, i) => {
+    let label = dayLabels[i];
+    if (!label) {
+      const d = new Date(now);
+      d.setDate(d.getDate() + i);
+      label = '周' + weekdays[d.getDay()];
+    }
+    html += `<span class="weather-day-item">${label}</span>`;
+    html += `<span class="weather-icon-temp">${weatherEmoji(f.code)} ${f.temp}°</span>`;
+  });
+
+  container.innerHTML = html;
 }
 
 function renderTopBarDate() {

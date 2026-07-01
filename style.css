@@ -181,23 +181,33 @@
     letter-spacing: 0.3px;
   }
 
-  /* ---- 内联天气（极简） ---- */
+  /* ---- 内联天气（7天紧凑横排） ---- */
   .top-bar-weather {
-    font-size: 12px;
-    color: var(--stone-400);
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    display: inline-flex;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 8px;
     align-items: center;
-    gap: 4px;
     grid-column: 3;
     grid-row: 2;
     justify-self: end;
     align-self: end;
   }
-  .top-bar-weather img {
-    width: 14px;
-    height: 14px;
+  .weather-day-item {
+    font-size: 10px;
+    color: var(--stone-400);
+    font-weight: 600;
+  }
+  .weather-icon-temp {
+    font-size: 11px;
+    color: var(--stone-500);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .weather-icon-temp img {
+    width: 13px;
+    height: 13px;
     vertical-align: -2px;
   }
 
