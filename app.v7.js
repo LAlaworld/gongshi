@@ -1,3 +1,6 @@
+// ============ 版本号（每次更新改这里）============
+const APP_VERSION = '7';
+
 // ============ DOM 缓存 ============
 const $ = (id) => document.getElementById(id);
 
@@ -1492,6 +1495,10 @@ async function startApp() {
 }
 
 (function init() {
+  // 动态写入版本号
+  const versionEl = document.querySelector('.version-footer');
+  if (versionEl) versionEl.textContent = 'v' + APP_VERSION;
+
   const user = getCurrentUser();
   if (user && VALID_ACCOUNTS.includes(user)) {
     // 已登录，直接启动
