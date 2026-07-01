@@ -148,7 +148,8 @@
     justify-content: center;
     gap: 4px;
     flex-shrink: 0;
-    grid-column: 1 / -1;
+    grid-column: 1;
+    grid-row: 2;
   }
 
   .top-bar-date-main {
@@ -188,6 +189,10 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: end;
+    align-self: end;
   }
   .top-bar-weather img {
     width: 14px;
@@ -1191,6 +1196,8 @@
     .top-bar-date-weekday { font-size: 16px; }
     .top-bar-date-full { font-size: 11px; }
     .top-bar-date-lunar { font-size: 11px; }
+    .top-bar-date { grid-column: 1; grid-row: auto; }
+    .top-bar-weather { grid-column: 1; grid-row: auto; justify-self: center; }
 
     header h1 { font-size: 30px; }
 
