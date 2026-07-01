@@ -1448,6 +1448,8 @@ function hideLogin() {
 function showLogin() {
   const tag = $('currentUserTag');
   if (tag) tag.textContent = '—';
+  const avatar = $('userAvatarInitial');
+  if (avatar) avatar.textContent = '';
   els.loginOverlay.classList.remove('hidden');
   els.loginInput.value = '';
   els.loginError.textContent = '';
@@ -1482,6 +1484,8 @@ async function startApp() {
   const user = getCurrentUser();
   const tag = $('currentUserTag');
   if (tag) tag.textContent = user || '—';
+  const avatar = $('userAvatarInitial');
+  if (avatar) avatar.textContent = (user || '').charAt(0).toUpperCase();
 
   // 从 GitHub 拉取最新数据，远程优先，直接覆盖本地
   async function pullRemote() {

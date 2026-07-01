@@ -65,19 +65,12 @@
   }
 
   header {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
     gap: 16px;
     margin-bottom: 28px;
   }
-
-  .header-title-row {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
 
   header h1 {
     font-family: Georgia, 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'Songti SC', 'KaiTi', serif;
@@ -90,14 +83,64 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    justify-self: center;
   }
 
-  .header-user-line {
-    font-size: 14px;
-    color: var(--stone-500);
-    font-weight: 400;
-    white-space: nowrap;
+  /* ---- 用户信息 Profile Chip ---- */
+  .header-user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 20px;
+    padding: 6px 14px 6px 6px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+    justify-self: end;
   }
+
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--amber-400), var(--amber-600));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Georgia, 'Noto Serif SC', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .user-info-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .current-user-tag {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--stone-700);
+    line-height: 1.2;
+  }
+
+  .switch-account-link {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--stone-400);
+    cursor: pointer;
+    transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.2;
+  }
+  .switch-account-link:hover { color: var(--amber-600); }
 
   .top-bar-date {
     display: flex;
@@ -105,6 +148,7 @@
     justify-content: center;
     gap: 4px;
     flex-shrink: 0;
+    grid-column: 1 / -1;
   }
 
   .top-bar-date-main {
@@ -219,18 +263,6 @@
   }
   .login-btn:active { opacity: 0.85; transform: scale(0.98); }
   .login-error { font-size: 12px; color: var(--red-500); margin-top: 10px; min-height: 18px; }
-
-  /* 切换账号链接 */
-  .current-user-tag {
-    font-weight: 600; color: var(--amber-600);
-  }
-  .switch-account-link {
-    display: inline-block; margin-left: 8px;
-    font-size: 12px; font-weight: 500; color: var(--stone-400);
-    cursor: pointer; transition: color 0.2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .switch-account-link:hover { color: var(--amber-600); }
 
 
   /* ---- 统计卡片 (Liquid Glass) ---- */
@@ -1114,15 +1146,7 @@
   /* ======== 响应式 ======== */
   @media (min-width: 721px) {
     header {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
       gap: 24px;
-    }
-    .header-title-row {
-      flex-direction: column;
-      gap: 6px;
-      flex-shrink: 0;
     }
 
 
@@ -1156,19 +1180,19 @@
     .container { padding: calc(20px + var(--safe-top)) 16px calc(120px + var(--safe-bottom)); }
 
     header {
-      gap: 12px;
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: 10px;
       margin-bottom: 20px;
     }
-    .header-title-row {
-      flex-direction: column;
-      gap: 4px;
+    .header-user-info {
+      justify-self: center;
     }
     .top-bar-date-weekday { font-size: 16px; }
     .top-bar-date-full { font-size: 11px; }
     .top-bar-date-lunar { font-size: 11px; }
 
     header h1 { font-size: 30px; }
-    .header-user-line { font-size: 12px; }
 
     #todayStatCard { border-top-width: 2px; }
 
