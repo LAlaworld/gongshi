@@ -1,6 +1,4 @@
-// 每次 SW 文件更新时改这个日期，旧缓存会自动清除
-const CACHE_DATE = '20260701';
-const CACHE = 'gongshi-' + CACHE_DATE;
+// SW 缓存名在安装时自动生成，无需手动维护
 const PRECACHE = [
   '/gongshi/',
   '/gongshi/index.html',
@@ -9,10 +7,13 @@ const PRECACHE = [
   '/gongshi/manifest.json'
 ];
 
+let CACHE = '';
+
 // 需要 cache-first 的静态资源（图标、天气图标等不常变的文件）
 const STATIC_PATTERN = /\.(png|jpg|jpeg|svg|ico|woff2?)$/;
 
 self.addEventListener('install', e => {
+  CACHE = 'gongshi-' + Date.now();
   e.waitUntil(
     caches.open(CACHE).then(c => c.addAll(PRECACHE))
   );
@@ -49,7 +50,6 @@ self.addEventListener('fetch', e => {
   }
 
   // HTML / JS / CSS：network-first + cache fallback
-  // 在线时总拿最新版本，离线时回退到缓存
   e.respondWith(
     fetch(e.request)
       .then(res => {
