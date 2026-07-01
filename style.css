@@ -50,26 +50,33 @@
     --glass-hover: rgba(255,255,255,0.08);
     --chip-bg: rgba(255,255,255,0.05);
     --chip-border: rgba(255,255,255,0.15);
-    --input-bg: rgba(120,113,108,0.08);
-    --input-bg-hover: rgba(120,113,108,0.12);
-    --modal-bg: rgba(255,255,255,0.88);
-    --modal-border: rgba(255,255,255,0.6);
-    --overlay-bg: rgba(0,0,0,0.15);
-    --btn-secondary-bg: rgba(120,113,108,0.08);
+    --input-bg: rgba(255,255,255,0.03);
+    --input-bg-hover: rgba(255,255,255,0.06);
+    --input-border: rgba(120,113,108,0.2);
+    --btn-border: rgba(120,113,108,0.2);
+    --modal-bg: rgba(255,255,255,0.03);
+    --modal-border: rgba(255,255,255,0.1);
+    --overlay-bg: transparent;
+    --btn-secondary-bg: rgba(255,255,255,0.03);
     --toast-bg: rgba(28,25,23,0.88);
     --toast-text: #fff;
-    --export-bg: rgba(255,255,255,0.55);
-    --export-bg-hover: rgba(255,255,255,0.75);
-    --export-border: rgba(255,255,255,0.6);
-    --swiped-bg: #fffcf4;
-    --log-card-active: rgba(255,255,255,0.8);
-    --month-hover: rgba(255,255,255,0.5);
-    --chart-canvas-bg: rgba(255,255,255,0.4);
-    --chart-switch-bg: rgba(120,113,108,0.1);
-    --chart-switch-active-bg: white;
+    --export-bg: rgba(255,255,255,0.03);
+    --export-bg-hover: rgba(255,255,255,0.08);
+    --export-border: rgba(255,255,255,0.1);
+    --swiped-bg: rgba(255,255,255,0.05);
+    --log-card-active: rgba(255,255,255,0.05);
+    --month-hover: rgba(255,255,255,0.05);
+    --chart-canvas-bg: rgba(255,255,255,0.03);
+    --chart-switch-bg: rgba(255,255,255,0.05);
+    --chart-switch-active-bg: rgba(255,255,255,0.1);
     --chart-switch-active-text: var(--amber-700);
-    --drag-bar-bg: rgba(120,113,108,0.18);
-    --login-overlay-bg: #f7f3ec;
+    --drag-bar-bg: rgba(255,255,255,0.1);
+    --login-overlay-bg:
+      radial-gradient(circle at 20% 20%, #c7d2fe, transparent 40%),
+      radial-gradient(circle at 80% 15%, #fbcfe8, transparent 40%),
+      radial-gradient(circle at 70% 80%, #bae6fd, transparent 40%),
+      radial-gradient(circle at 25% 75%, #fef3c7, transparent 40%),
+      #f8f5f0;
     --title-gradient: linear-gradient(135deg, var(--stone-900) 40%, var(--amber-700));
     --select-arrow-color: %2378716c;
     --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
@@ -111,6 +118,8 @@
     --chip-border: rgba(255,255,255,0.08);
     --input-bg: rgba(255,255,255,0.05);
     --input-bg-hover: rgba(255,255,255,0.09);
+    --input-border: rgba(255,255,255,0.12);
+    --btn-border: rgba(255,255,255,0.12);
     --modal-bg: rgba(22,20,18,0.94);
     --modal-border: rgba(255,255,255,0.06);
     --overlay-bg: rgba(0,0,0,0.55);
@@ -140,6 +149,7 @@
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'HarmonyOS Sans', sans-serif;
     background: var(--body-bg);
+    background-attachment: fixed;
     min-height: 100vh;
     color: var(--stone-800);
     -webkit-font-smoothing: antialiased;
@@ -1100,8 +1110,8 @@
 
   .modal {
     background: var(--modal-bg);
-    backdrop-filter: blur(60px);
-    -webkit-backdrop-filter: blur(60px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--modal-border);
     border-bottom: none;
     border-radius: 24px 24px 0 0;
@@ -1154,7 +1164,7 @@
   textarea {
     width: 100%;
     padding: 12px 14px;
-    border: none;
+    border: 1px solid var(--input-border);
     border-radius: var(--radius-input);
     font-size: 16px;
     font-family: inherit;
@@ -1174,6 +1184,7 @@
   textarea:focus {
     outline: none;
     box-shadow: 0 0 0 2px var(--amber-500);
+    border-color: var(--amber-500);
     background: var(--input-bg-hover);
   }
 
@@ -1201,7 +1212,7 @@
     font-family: inherit;
     cursor: pointer;
     transition: all 0.2s ease;
-    border: none;
+    border: 1px solid var(--btn-border);
     min-height: 50px;
     -webkit-tap-highlight-color: transparent;
   }
@@ -1211,15 +1222,18 @@
   .btn-secondary {
     background: var(--btn-secondary-bg);
     color: var(--stone-700);
+    border-color: var(--btn-border);
   }
   .btn-primary {
     background: linear-gradient(135deg, var(--amber-400), var(--amber-600));
     color: white;
+    border-color: transparent;
     box-shadow: 0 2px 8px rgba(245,158,11,0.2);
   }
 .btn-danger {
   background: #dc2626;
   color: white; flex: 0 0 auto; padding: 14px 20px; font-size: 14px;
+  border-color: transparent;
 }
 
   /* ---- Toast ---- */
