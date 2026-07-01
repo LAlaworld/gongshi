@@ -666,7 +666,7 @@ function renderLogList(logs) {
           ${monthLogs.map((log) => {
             const { month, day, weekday } = formatDate(log.date);
             return `
-              <div class="log-card-wrapper" data-id="${log.id}">
+              <div class="log-card-wrapper${log.shift === '早班' ? ' shift-morning' : log.shift === '中班' ? ' shift-mid' : log.shift === '晚班' ? ' shift-night' : ''}" data-id="${log.id}">
                 <div class="log-card-delete-bg"><span>
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
