@@ -1393,22 +1393,11 @@ function renderWeather(data) {
   const container = els.topBarWeather;
   if (!container) return;
   const forecast = data.forecast || data;
-  const city = data.city || '';
-  const dayLabels = ['今天', '明天', '后天'];
+  if (!forecast || !forecast[0]) return;
 
-  // 城市名写入独立元素
-  const cityEl = document.getElementById('weatherCity');
-  if (cityEl) cityEl.textContent = city;
-
-  let html = '';
-  html += forecast.map((f, i) => `
-    <div class="weather-item weather-loaded">
-      <span class="weather-day">${dayLabels[i] || ''}</span>
-      <span class="weather-icon">${weatherEmoji(f.code)}</span>
-      <span class="weather-temp">${f.temp}°</span>
-    </div>`).join('');
-
-  container.innerHTML = html;
+  // 只显示今天的天气：图标 + 温度
+  const today = forecast[0];
+  container.innerHTML = `${weatherEmoji(today.code)} <span>${today.temp}°</span>`;
 }
 
 function renderTopBarDate() {
