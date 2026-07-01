@@ -1,5 +1,5 @@
 // 每次更新代码后改这里，缓存名和预缓存列表会自动更新
-const VERSION = '7';
+const VERSION = '8';
 const CACHE = 'gongshi-v' + VERSION;
 const PRECACHE = [
   '/gongshi/',

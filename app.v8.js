@@ -1,5 +1,5 @@
 // ============ 版本号（每次更新改这里）============
-const APP_VERSION = '7';
+const APP_VERSION = '8';
 
 // ============ DOM 缓存 ============
 const $ = (id) => document.getElementById(id);
