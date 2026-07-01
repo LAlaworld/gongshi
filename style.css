@@ -1186,20 +1186,20 @@
 
     header {
       grid-template-columns: 1fr;
-      justify-items: center;
+      justify-items: start;
       gap: 10px;
       margin-bottom: 20px;
     }
     .header-user-info {
-      justify-self: center;
+      justify-self: start;
     }
     .top-bar-date-weekday { font-size: 16px; }
     .top-bar-date-full { font-size: 11px; }
     .top-bar-date-lunar { font-size: 11px; }
     .top-bar-date { grid-column: 1; grid-row: auto; }
-    .top-bar-weather { grid-column: 1; grid-row: auto; justify-self: center; }
+    .top-bar-weather { grid-column: 1; grid-row: auto; justify-self: start; }
 
-    header h1 { font-size: 30px; }
+    header h1 { font-size: 30px; justify-self: start; }
 
     #todayStatCard { border-top-width: 2px; }
 
