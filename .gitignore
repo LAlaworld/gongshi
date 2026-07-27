@@ -7,3 +7,5 @@ config.js
 sync_gongshi_tdoc.js
 sync_gongshi_feishu.js
 gongshi-feishu-sync.log
+# 每日冷备份（含工时数据），不入库
+bf/
