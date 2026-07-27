@@ -1,0 +1,12 @@
+#!/bin/sh
+# 保护线上工时数据：禁止提交 data_*.json
+# 原因：GitHub 仓库里的 data_*.json 是 App 的运行数据库（App 通过 Contents API 直接写入）。
+# 本地副本只是镜像且可能过期，一旦把本地旧文件推上去，会覆盖线上最新工时数据。
+if git diff --cached --name-only | grep -q '^data_.*\.json$'; then
+  echo "❌ 已拦截：禁止提交 data_*.json"
+  echo "   GitHub 上的该文件是工时数据库（App 用 API 直接读写），推本地文件会覆盖线上数据。"
+  echo "   请执行 git restore --staged data_*.json 取消暂存后再提交。"
+  echo "   如确认必须提交（极少数情况），用 git commit --no-verify 强制跳过。"
+  exit 1
+fi
+exit 0
