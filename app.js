@@ -988,8 +988,8 @@ function handleSubmit(e) {
   const notes = els.notes.value.trim();
   const editId = els.editId.value;
 
-  if (!date || isNaN(hours) || hours <= 0) {
-    showToast('请填写有效的工时', true);
+  if (!date || isNaN(hours) || hours <= 0 || hours > 24) {
+    showToast('请填写有效的工时（0-24 小时）', true);
     return;
   }
 
@@ -1220,7 +1220,8 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     if ($('analysisModalOverlay').classList.contains('active')) {
       closeAnalysisModal();
-    } else {
+    } else if ($('modalOverlay').classList.contains('active')) {
+      // 只在弹窗确实打开时才关闭，否则会触发 unlockBodyScroll 把页面滚动位置重置到顶部
       closeModal();
     }
   }
@@ -1552,6 +1553,9 @@ function initFilterDates() {
   els.filterEndDate.value = today;
 }
 
+// 是否已启动远程同步定时器（防止切换账号后重复注册）
+let _remoteSyncStarted = false;
+
 // 定期清理：物理删除超过 30 天的软删除记录
 function purgeDeletedLogs() {
   const logs = getLogs(true);
@@ -1595,13 +1599,16 @@ async function startApp() {
   renderTopBarDate();
   fetchWeather();
 
-  // 每 5 分钟检查一次远程更新
-  setInterval(pullRemote, 300000);
+  // 每 5 分钟检查一次远程更新（切换账号会重新进入 startApp，防止重复注册定时器和监听）
+  if (!_remoteSyncStarted) {
+    _remoteSyncStarted = true;
+    setInterval(pullRemote, 300000);
 
-  // 页面回到前台时立即拉取一次
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) pullRemote();
-  });
+    // 页面回到前台时立即拉取一次
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) pullRemote();
+    });
+  }
 }
 
 (function init() {

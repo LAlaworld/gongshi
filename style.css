@@ -1169,7 +1169,7 @@
     font-size: 16px;
     font-family: inherit;
     color: var(--stone-700);
-    background: var(--input-bg);
+    background-color: var(--input-bg);
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     min-height: 48px;
     -webkit-appearance: none;
@@ -1185,7 +1185,7 @@
     outline: none;
     box-shadow: 0 0 0 2px var(--amber-500);
     border-color: var(--amber-500);
-    background: var(--input-bg-hover);
+    background-color: var(--input-bg-hover);
   }
 
   select {
@@ -1198,6 +1198,8 @@
 
   [data-theme="dark"] select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
   }
 
   textarea { resize: vertical; min-height: 80px; }

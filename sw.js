@@ -1,8 +1,11 @@
 // 每次推送更新此版本号，浏览器会检测到 sw.js 变化并自动更新
 // 格式：年月日+3位序号（YYYYMMDDNNN），如 20260701001、20260701002
-const SW_VERSION = '20260702013';
+const SW_VERSION = '20260727003';
 
-// SW 缓存名在安装时自动生成，无需手动维护
+// SW 缓存名由版本号派生：bump 版本即换新缓存，activate 时自动清理旧缓存
+// （不要在这里用 Date.now()：SW 被系统杀死再唤醒时 install 不会重跑，CACHE 会变成空字符串）
+const CACHE = 'gongshi-' + SW_VERSION;
+
 const PRECACHE = [
   '/gongshi/',
   '/gongshi/index.html',
@@ -11,13 +14,10 @@ const PRECACHE = [
   '/gongshi/manifest.json'
 ];
 
-let CACHE = '';
-
 // 需要 cache-first 的静态资源（图标、天气图标等不常变的文件）
 const STATIC_PATTERN = /\.(png|jpg|jpeg|svg|ico|woff2?)$/;
 
 self.addEventListener('install', e => {
-  CACHE = 'gongshi-' + Date.now();
   e.waitUntil(
     caches.open(CACHE).then(c => c.addAll(PRECACHE))
   );

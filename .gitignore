@@ -1,4 +1,9 @@
 .DS_Store
 .trae/
 .workbuddy/
+.agents/
 config.js
+# 同步脚本含密钥（飞书 App Secret / GitHub Token），不入库
+sync_gongshi_tdoc.js
+sync_gongshi_feishu.js
+gongshi-feishu-sync.log
